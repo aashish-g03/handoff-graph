@@ -37,6 +37,45 @@ RETURN collect(a.name) AS areas
 """
 
 
+# How many issues did the bot route to this person before $t? (the denominator for their forward rate)
+BOT_ROUTED_TO = """
+MATCH (:Issue)-[s:ASSIGNED]->(p:Person {login: $login})
+WHERE s.by_bot AND s.at < $t
+RETURN count(s)
+"""
+
+AREA_OWNER_PRIOR = 0.02  # small prior so Jev can still surface an area owner the memory never saw
+
+
+def owner_prior(g, t: int, first_pick: str, areas: list[str], k: int = 5) -> tuple[dict[str, float], dict[str, str]]:
+    """A probability model of where the bot's pick ends up, from memory as of t.
+
+        P(stays with A)   = (routed_to_A - forwarded_by_A + 1) / (routed_to_A + 2)
+        P(goes to B)      = forwards_A_to_B / (routed_to_A + 2)
+        area owners       = AREA_OWNER_PRIOR each (only if not already a candidate)
+    then normalised. Returns (prior, human-readable path per candidate).
+    """
+    routed = g.ro_query(BOT_ROUTED_TO, {"login": first_pick, "t": t}, timeout=QUERY_TIMEOUT_MS).result_set[0][0]
+    fwd = g.ro_query(LEARNED_FORWARDS, {"first_pick": first_pick, "t": t, "k": k},
+                     timeout=QUERY_TIMEOUT_MS).result_set
+    forwarded = sum(r[1] for r in fwd)
+    denom = routed + 2
+    prior = {first_pick: max(routed - forwarded + 1, 1) / denom}
+    path = {first_pick: f"bot routes to @{first_pick}; kept {max(routed - forwarded, 0)}/{routed} so far"}
+    for login, times, _last, examples in fwd:
+        prior[login] = prior.get(login, 0.0) + times / denom
+        path[login] = (f"bot routes to @{first_pick} -> @{first_pick} handed {times}/{routed} to @{login} "
+                       f"(e.g. #{', #'.join(map(str, examples[:3]))})")
+    if areas:
+        for login, issues, via, _l in g.ro_query(AREA_OWNERS, {"areas": areas, "t": t, "k": k},
+                                                  timeout=QUERY_TIMEOUT_MS).result_set:
+            if login not in prior:
+                prior[login] = AREA_OWNER_PRIOR
+                path[login] = f"owns {issues} open issue(s) in {', '.join(via)}"
+    total = sum(prior.values())
+    return {c: v / total for c, v in prior.items()}, path
+
+
 @dataclass
 class Candidate:
     login: str
