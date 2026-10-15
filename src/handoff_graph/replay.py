@@ -123,7 +123,25 @@ class Row:
     p_off: float | None = None
 
 
+# Protocol for the fresh spring holdout (set 2026-10-16 before any spring result existed). v2 design frozen on DEV.
+SPRING = {
+    "raw": PROJECT_ROOT / "data/raw/vscode_issues_2026-01-01_2026-05-31.json",
+    "bodies": PROJECT_ROOT / "data/raw/vscode_bodies_2026H1.json",
+    "repo": "microsoft/vscode@2026H1",
+    "learn_end": ts("2026-03-18T00:00:00Z"),
+    "tune_end": ts("2026-04-01T00:00:00Z"),
+    "holdout_end": ts("2026-05-16T00:00:00Z"),
+}
+DATASET = "summer"
+
+
 def period_of(t: int) -> str:
+    if DATASET == "spring":
+        if t < SPRING["learn_end"]:
+            return "learn"
+        if t < SPRING["tune_end"]:
+            return "tune"
+        return "holdout" if t < SPRING["holdout_end"] else "unsettled"
     if t < LEARN_END:
         return "learn"
     if t < TUNE_END:
@@ -136,8 +154,9 @@ def period_of(t: int) -> str:
 
 
 def load() -> tuple[list[Issue], dict[str, str]]:
-    issues = [parse_issue(r) for r in json.load(RAW.open())]
-    bodies = json.load(BODIES.open()) if BODIES.exists() else {}
+    raw_path, bodies_path = (SPRING["raw"], SPRING["bodies"]) if DATASET == "spring" else (RAW, BODIES)
+    issues = [parse_issue(r) for r in json.load(raw_path.open())]
+    bodies = json.load(bodies_path.open()) if bodies_path.exists() else {}
     return sorted(issues, key=lambda i: i.routing_time), bodies
 
 
@@ -227,7 +246,7 @@ def summarise(rows: list[Row]) -> dict:
 
 def run(arms: list[str], gate: float | None, limit: int | None, workers: int, live: bool,
         holdout: bool = False) -> Path:
-    g = get_graph()
+    g = get_graph(SPRING["repo"] if DATASET == "spring" else "microsoft/vscode")
     issues, bodies = load()
     pop = population(issues)
     handoffs = sorted((h for i in issues for h in derive_handoffs(i)), key=lambda h: h.at)
@@ -312,7 +331,13 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--offline", action="store_true", help="use cached Jev answers only")
     ap.add_argument("--holdout", action="store_true", help="evaluate on HOLDOUT (run once, frozen design only)")
+    ap.add_argument("--dataset", choices=["summer", "spring"], default="summer",
+                    help="spring = fresh Jan-May 2026 holdout (always evaluates its HOLDOUT)")
     a = ap.parse_args()
+    global DATASET
+    DATASET = a.dataset
+    if DATASET == "spring":
+        a.holdout = True
     print("results:", run(a.arms.split(","), a.gate, a.limit, a.workers, not a.offline, a.holdout))
 
 
