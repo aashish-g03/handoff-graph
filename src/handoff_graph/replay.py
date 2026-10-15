@@ -38,7 +38,7 @@ from .db import PROJECT_ROOT, QUERY_TIMEOUT_MS, get_graph
 from .decide import Decision, JevJudge, decide, profiles
 from .events import Issue, derive_handoffs, final_owners, is_bot, parse_issue, ts
 from .learner import forget_all, record_handoffs
-from .agent import route_issue
+from .agent import ROUTING_GATE, route_issue, route_issue_v2
 from .router import areas_at, candidate_owners, owner_prior
 
 RAW = PROJECT_ROOT / "data/raw/vscode_issues_2026-06-01_2026-10-15.json"
@@ -55,6 +55,8 @@ HOLDOUT_END = ts("2026-09-15T00:00:00Z")
 DAY = 86_400
 K = 5
 GATES = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
+MAX_ESCALATION = 0.15  # pre-registered: v2 may escalate at most 15% of issues
+ESCALATION_GRID = [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 1.01]
 UTILITY = {"correct": 1.0, "wrong": -1.0, "escalated": -0.5}
 
 RECENT_ASSIGNEES = """
@@ -118,6 +120,7 @@ class Row:
     input_tokens: int
     reason: str
     p_handoff: float | None = None
+    p_off: float | None = None
 
 
 def period_of(t: int) -> str:
@@ -161,6 +164,14 @@ def route(g, judge, arm: str, issue: Issue, body: str, gate: float) -> Row:
     elif arm == "jev_graph":
         r = route_issue(g, judge, doc, t, bot_pick, gate)
         cands, d = r.candidates, r.decision
+    elif arm in ("graph_v2", "jev_graph_v2"):
+        # v2 rows store the keep/alternative decision with escalation OFF; escalation is applied after tuning.
+        r, p_off = route_issue_v2(g, judge, doc, t, bot_pick, ROUTING_GATE, escalate_at=2.0, use_jev=(arm == "jev_graph_v2"))
+        cands, d = r.candidates, r.decision
+        row = Row(issue.number, period_of(t), t, bot_pick, truth, handed, arm, d.owner, d.margin, cands,
+                  any(c in truth for c in cands), d.jev_calls, d.latency_ms, d.input_tokens, d.reason,
+                  d.p_handoff, p_off)
+        return row
     elif arm == "jev_nograph":
         rows = g.ro_query(RECENT_ASSIGNEES, {"t": t, "since": t - 14 * DAY, "k": K},
                           timeout=QUERY_TIMEOUT_MS).result_set
@@ -253,16 +264,29 @@ def run(arms: list[str], gate: float | None, limit: int | None, workers: int, li
         return [Row(**{**asdict(r), "pick": (r.pick if (not r.arm.startswith("jev") or r.margin >= gv) else None)})
                 for r in rs]
 
+    def escalated_v2(rs: list[Row], th: float) -> list[Row]:
+        return [Row(**{**asdict(r), "pick": (None if (r.p_off or 0) >= th and r.pick == r.bot_pick else r.pick)})
+                for r in rs]
+
     tuned = {}
+    for arm in [a for a in arms if a.endswith("_v2")]:
+        tune_rows = [r for r in rows if r.arm == arm and r.period == "tune"]
+        def prec(th):
+            rs = escalated_v2(tune_rows, th)
+            routed = [r for r in rs if r.pick is not None]
+            esc = 1 - len(routed) / max(1, len(rs))
+            return (sum(r.pick in r.truth for r in routed) / max(1, len(routed))) if esc <= MAX_ESCALATION else -1
+        tuned[arm] = max(ESCALATION_GRID, key=prec)
     for arm in arms:
-        if not arm.startswith("jev"):
+        if not arm.startswith("jev") or arm.endswith("_v2"):
             continue
         # Pre-registered: tune on TUNE issues the bot's pick handed off (pooled utility always says "never escalate").
         tune_rows = [r for r in rows if r.arm == arm and r.period == "tune" and r.bot_pick_handed_off]
         best = max(gates, key=lambda gv: sum(UTILITY[outcome(r)] for r in gated(tune_rows, gv)))
         tuned[arm] = best
-    final = [r for r in rows if not r.arm.startswith("jev")] + \
-            [r for arm, gv in tuned.items() for r in gated([x for x in rows if x.arm == arm], gv)]
+    final = [r for r in rows if not r.arm.startswith("jev") and not r.arm.endswith("_v2")] + \
+            [r for arm, gv in tuned.items() if not arm.endswith("_v2") for r in gated([x for x in rows if x.arm == arm], gv)] + \
+            [r for arm, th in tuned.items() if arm.endswith("_v2") for r in escalated_v2([x for x in rows if x.arm == arm], th)]
 
     RESULTS.mkdir(exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")

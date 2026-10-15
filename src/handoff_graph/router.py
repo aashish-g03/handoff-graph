@@ -11,7 +11,7 @@ from .db import QUERY_TIMEOUT_MS
 # Who has A learned to hand this kind of work to? Only handoffs recorded before $t count.
 LEARNED_FORWARDS = """
 MATCH (a:Person {login: $first_pick})-[h:HANDED_OFF]->(b:Person)
-WHERE h.at < $t AND h.kind IN ['forward', 'reassign']
+WHERE h.at < $t AND h.at >= $since AND h.kind IN ['forward', 'reassign']
 WITH b, count(h) AS times, max(h.at) AS last_at, collect(h.issue)[0..5] AS examples
 RETURN b.login AS login, times, last_at, examples
 ORDER BY times DESC, last_at DESC
@@ -40,31 +40,36 @@ RETURN collect(a.name) AS areas
 # How many issues did the bot route to this person before $t? (the denominator for their forward rate)
 BOT_ROUTED_TO = """
 MATCH (:Issue)-[s:ASSIGNED]->(p:Person {login: $login})
-WHERE s.by_bot AND s.at < $t
+WHERE s.by_bot AND s.at < $t AND s.at >= $since
 RETURN count(s)
 """
 
 AREA_OWNER_PRIOR = 0.02  # small prior so Jev can still surface an area owner the memory never saw
 
 
-def owner_prior(g, t: int, first_pick: str, areas: list[str], k: int = 5) -> tuple[dict[str, float], dict[str, str]]:
+def owner_prior(g, t: int, first_pick: str, areas: list[str], k: int = 5,
+                window_days: int | None = None) -> tuple[dict[str, float], dict[str, str]]:
     """A probability model of where the bot's pick ends up, from memory as of t.
 
         P(stays with A)   = (routed_to_A - forwarded_by_A + 1) / (routed_to_A + 2)
         P(goes to B)      = forwards_A_to_B / (routed_to_A + 2)
         area owners       = AREA_OWNER_PRIOR each (only if not already a candidate)
     then normalised. Returns (prior, human-readable path per candidate).
+    With `window_days`, only the last N days of memory count (handoff patterns drift within weeks).
     """
-    routed = g.ro_query(BOT_ROUTED_TO, {"login": first_pick, "t": t}, timeout=QUERY_TIMEOUT_MS).result_set[0][0]
-    fwd = g.ro_query(LEARNED_FORWARDS, {"first_pick": first_pick, "t": t, "k": k},
+    since = t - window_days * 86_400 if window_days else 0
+    routed = g.ro_query(BOT_ROUTED_TO, {"login": first_pick, "t": t, "since": since},
+                        timeout=QUERY_TIMEOUT_MS).result_set[0][0]
+    fwd = g.ro_query(LEARNED_FORWARDS, {"first_pick": first_pick, "t": t, "k": k, "since": since},
                      timeout=QUERY_TIMEOUT_MS).result_set
     forwarded = sum(r[1] for r in fwd)
     denom = routed + 2
     prior = {first_pick: max(routed - forwarded + 1, 1) / denom}
-    path = {first_pick: f"bot routes to @{first_pick}; kept {max(routed - forwarded, 0)}/{routed} so far"}
+    span = f"in the last {window_days} days" if window_days else "so far"
+    path = {first_pick: f"bot routes to @{first_pick}; kept {max(routed - forwarded, 0)}/{routed} {span}"}
     for login, times, _last, examples in fwd:
         prior[login] = prior.get(login, 0.0) + times / denom
-        path[login] = (f"bot routes to @{first_pick} -> @{first_pick} handed {times}/{routed} to @{login} "
+        path[login] = (f"bot routes to @{first_pick} -> @{first_pick} handed {times}/{routed} {span} to @{login} "
                        f"(e.g. #{', #'.join(map(str, examples[:3]))})")
     if areas:
         for login, issues, via, _l in g.ro_query(AREA_OWNERS, {"areas": areas, "t": t, "k": k},
@@ -106,7 +111,7 @@ def candidate_owners(g, number: int, t: int, first_pick: str | None, areas: list
     if first_pick:
         add(first_pick, 1.0, f"current process picks @{first_pick}")
     if use_memory and first_pick:
-        rows = g.ro_query(LEARNED_FORWARDS, {"first_pick": first_pick, "t": t, "k": k},
+        rows = g.ro_query(LEARNED_FORWARDS, {"first_pick": first_pick, "t": t, "k": k, "since": 0},
                           timeout=QUERY_TIMEOUT_MS).result_set
         forwarded = sum(r[1] for r in rows)
         for login, times, _last, examples in rows:
