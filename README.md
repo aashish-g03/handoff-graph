@@ -31,8 +31,8 @@ Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackat
 
 In **microsoft/vscode** (June to mid-October 2026):
 - 11,734 issues were filed.
-- 64% of first assignments came from the triage bot.
-- 15% of assigned issues were handed off, and **72% of those handoffs followed the bot's pick**.
+- 65% of first assignments came from the triage bot.
+- 1,678 issues (16% of assigned issues) were handed off to someone else, and **79% of those started with the bot's pick**.
 
 ## Results
 
