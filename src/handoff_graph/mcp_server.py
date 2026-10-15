@@ -12,7 +12,8 @@ import time
 
 from mcp.server.mcpserver import MCPServer
 
-from .agent import ROUTING_GATE, route_issue
+from .agent import ROUTING_GATE
+from .agent import route_issue as _route
 from .db import QUERY_TIMEOUT_MS, get_graph
 from .decide import JevJudge
 from .events import Handoff
@@ -35,7 +36,7 @@ def _person_exists(g, login: str) -> bool:
 
 
 @mcp.tool()
-def route_issue_tool(title: str, body: str, proposed_assignee: str, repo: str = "microsoft/vscode") -> dict:
+def route_issue(title: str, body: str, proposed_assignee: str, repo: str = "microsoft/vscode") -> dict:
     """Decide who should own a new issue that the current process would assign to `proposed_assignee`.
 
     Returns the chosen owner (or an escalation), the confidence margin, every candidate's probability,
@@ -45,7 +46,7 @@ def route_issue_tool(title: str, body: str, proposed_assignee: str, repo: str = 
     if not _person_exists(g, proposed_assignee):
         return {"owner": None, "escalate": True,
                 "reason": f"@{proposed_assignee} is not in the {repo} graph; not modelled, ask a human"}
-    r = route_issue(g, _jev(), {"number": -1, "title": title, "body": body}, int(time.time()), proposed_assignee)
+    r = _route(g, _jev(), {"number": -1, "title": title, "body": body}, int(time.time()), proposed_assignee)
     d = r.decision
     return {
         "owner": d.owner,
