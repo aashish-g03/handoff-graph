@@ -58,7 +58,7 @@
    - **Learner:** consumes the event stream; the only writer (`record_handoff`).
    - **Router:** read-only.
    - Plus an MCP server exposing the tools (thin wrapper).
-6. Deploy: FalkorDB Cloud (password) + a small server on Fly or Render; Docker Compose locally.
+6. Deploy: FalkorDB Cloud (password) + the MCP server on Railway (Dockerfile); Docker Compose locally.
 7. README:
    - data model diagram
    - the actual Cypher
