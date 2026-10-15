@@ -142,9 +142,13 @@ We replay real triage in time order: every issue is routed at the moment VS Code
 docker run -d --name hg-falkordb -p 6380:6379 -p 3001:3000 falkordb/falkordb:latest
 cp .env.example .env   # add TYPESAFE_API_KEY
 uv sync
+# fetch the public issue data (uses your `gh` login; ~10 min)
+python3 data/fetch_vscode_issues.py 2026-06-01 2026-10-15 data/raw/vscode_issues_2026-06-01_2026-10-15.json
+python3 data/fetch_bodies.py data/raw/vscode_issues_2026-06-01_2026-10-15.json data/raw/vscode_bodies.json
 uv run python -m handoff_graph.ingest data/raw/vscode_issues_2026-06-01_2026-10-15.json --bodies data/raw/vscode_bodies.json
 uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph
-uv run python -m handoff_graph.mcp_server        # MCP over stdio
+uv run python -m handoff_graph.learner data/raw/vscode_issues_2026-06-01_2026-10-15.json   # learn all handoffs
+uv run python -m handoff_graph.mcp_server        # MCP over stdio (or --http 8765)
 ```
 
 ## Prior art

@@ -1,0 +1,24 @@
+# Render blueprint: the Handoff Graph MCP server over streamable HTTP.
+# Secrets are NOT stored here; set them in the Render dashboard (sync: false).
+services:
+  - type: web
+    name: handoff-graph-mcp
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: HG_TARGET
+        value: cloud
+      - key: JEV_MODEL
+        value: jev-1.14.0
+      - key: TYPESAFE_API_KEY
+        sync: false
+      - key: FALKORDB_CLOUD_HOST
+        sync: false
+      - key: FALKORDB_CLOUD_PORT
+        sync: false
+      - key: FALKORDB_CLOUD_USERNAME
+        sync: false
+      - key: FALKORDB_CLOUD_PASSWORD
+        sync: false
