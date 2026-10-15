@@ -22,13 +22,26 @@ from .db import QUERY_TIMEOUT_MS
 
 TIE_MARGIN = 0.15
 BODY_CHARS = 1500
-PROFILE_TITLES = 6
+PROFILE_TITLES = 8
 
 # Issues a person owned as of $t: assigned before t and not handed away by t.
 PROFILE = """
 MATCH (i:Issue)-[s:ASSIGNED]->(p:Person {login: $login})
 WHERE s.at < $t AND s.removed_at > $t AND i.number <> $number
 RETURN i.title ORDER BY s.at DESC LIMIT $k
+"""
+
+# Contrastive memory (graph-on only): what the bot's pick A KEPT vs what A HANDED to each B, before $t.
+KEPT_BY = """
+MATCH (i:Issue)-[s:ASSIGNED]->(:Person {login: $a})
+WHERE s.by_bot AND s.at < $t AND s.removed_at > $t AND i.number <> $number
+RETURN i.title ORDER BY s.at DESC LIMIT $k
+"""
+HANDED_BY = """
+MATCH (:Person {login: $a})-[h:HANDED_OFF]->(b:Person)
+WHERE h.at < $t AND h.issue <> $number AND ($b = '' OR b.login = $b)
+MATCH (i:Issue {number: h.issue})
+RETURN i.title ORDER BY h.at DESC LIMIT $k
 """
 
 
@@ -42,14 +55,30 @@ class Decision:
     input_tokens: int
     reason: str
     noul: dict[str, float] = field(default_factory=dict)
+    p_handoff: float | None = None
 
 
-def profiles(g, logins: list[str], number: int, t: int) -> dict[str, list[str]]:
-    return {
-        login: [r[0] for r in g.ro_query(PROFILE, {"login": login, "t": t, "number": number, "k": PROFILE_TITLES},
-                                         timeout=QUERY_TIMEOUT_MS).result_set]
-        for login in logins
-    }
+def _titles(g, q: str, params: dict) -> list[str]:
+    return [r[0] for r in g.ro_query(q, {**params, "k": PROFILE_TITLES}, timeout=QUERY_TIMEOUT_MS).result_set]
+
+
+def profiles(g, logins: list[str], number: int, t: int, first_pick: str | None = None) -> dict[str, list[str]]:
+    """Evidence shown to Jev per candidate. With `first_pick` (graph memory on), A's profile is what A
+    kept and B's is what A handed to B; otherwise (or with no such memory) general ownership."""
+    out = {}
+    for login in logins:
+        titles: list[str] = []
+        if first_pick and login == first_pick:
+            titles = _titles(g, KEPT_BY, {"a": first_pick, "t": t, "number": number})
+        elif first_pick:
+            titles = _titles(g, HANDED_BY, {"a": first_pick, "b": login, "t": t, "number": number})
+        out[login] = titles or _titles(g, PROFILE, {"login": login, "t": t, "number": number})
+    return out
+
+
+def handoff_contrast(g, first_pick: str, number: int, t: int) -> tuple[list[str], list[str]]:
+    return (_titles(g, KEPT_BY, {"a": first_pick, "t": t, "number": number}),
+            _titles(g, HANDED_BY, {"a": first_pick, "b": "", "t": t, "number": number}))
 
 
 def combine(prior: dict[str, float], likelihood: dict[str, float]) -> dict[str, float]:
@@ -73,12 +102,25 @@ class JevJudge:
         from typesafe_sdk import TypeSafeClient
         self.client = TypeSafeClient(model=model or os.environ.get("JEV_MODEL", "jev-1.14.0"))
 
-    def fit(self, issue: dict, profs: dict[str, list[str]]) -> tuple[dict[str, float], int]:
-        from typesafe_sdk import Noul
+    def fit(self, issue: dict, profs: dict[str, list[str]],
+            contrast: tuple[list[str], list[str]] | None = None) -> tuple[dict[str, float], int, float | None]:
+        from typesafe_sdk import Noul, Score
         keys = {f"fit_{k}": login for k, login in enumerate(profs)}
+        extra = {}
+        if contrast and contrast[0] and contrast[1]:
+            extra["handoff"] = Score(
+                instructions={
+                    "kept_examples": contrast[0],
+                    "handed_off_examples": contrast[1],
+                    "question": "Is the issue in `issue_title` and `issue_body` more like `kept_examples` "
+                                "(the engineer keeps it) or `handed_off_examples` (the engineer hands it to someone else)?",
+                },
+                criteria=["Like `kept_examples`: the engineer keeps it",
+                          "Like `handed_off_examples`: the engineer hands it off"],
+            )
         r = self.client.system_one(
             state={"issue_title": issue["title"], "issue_body": issue["body"][:BODY_CHARS]},
-            questions={
+            questions={**extra, **{
                 key: Noul(
                     instructions={
                         "engineer_recent_issues": profs[login] or ["(no recent issues)"],
@@ -87,9 +129,11 @@ class JevJudge:
                     },
                 )
                 for key, login in keys.items()
-            },
+            }},
         )
-        return {login: r.nouls[key].noul for key, login in keys.items()}, r.usage.input_tokens
+        # 2-level Score: .score is the expected level in [0, 1] = P(hands off). (SDK keys probabilities by int.)
+        p_handoff = float(r.scores["handoff"].score) if extra else None
+        return {login: r.nouls[key].noul for key, login in keys.items()}, r.usage.input_tokens, p_handoff
 
     def tiebreak(self, issue: dict, profs: dict[str, list[str]]) -> tuple[dict[str, float], int]:
         from typesafe_sdk import Choice
@@ -106,8 +150,14 @@ class JevJudge:
         return dict(r.choices["owner"].probabilities), r.usage.input_tokens
 
 
-def decide(g, judge, issue: dict, t: int, prior: dict[str, float], gate: float) -> Decision:
-    """Pick an owner for `issue` among `prior`'s candidates, as of time t."""
+def decide(g, judge, issue: dict, t: int, prior: dict[str, float], gate: float,
+           first_pick: str | None = None) -> Decision:
+    """Pick an owner for `issue` among `prior`'s candidates, as of time t.
+
+    With `first_pick` (graph memory on) Jev sees contrastive evidence: what that person kept vs handed
+    to each candidate, plus a keep-or-hand-off Score. Likelihoods then become
+    noul(A) * (1 - p_handoff) for A and noul(B) * p_handoff for everyone else (fixed rule).
+    """
     t0 = time.time()
     cands = list(prior)
     if not cands:
@@ -115,8 +165,11 @@ def decide(g, judge, issue: dict, t: int, prior: dict[str, float], gate: float) 
     if len(cands) == 1:
         only = cands[0]
         return Decision(only, {only: 1.0}, 1.0, 0, int((time.time() - t0) * 1000), 0, "single candidate")
-    profs = profiles(g, cands, issue["number"], t)
-    likelihood, tokens = judge.fit(issue, profs)
+    profs = profiles(g, cands, issue["number"], t, first_pick)
+    contrast = handoff_contrast(g, first_pick, issue["number"], t) if first_pick else None
+    likelihood, tokens, p_handoff = judge.fit(issue, profs, contrast)
+    if first_pick and p_handoff is not None:
+        likelihood = {c: v * ((1 - p_handoff) if c == first_pick else p_handoff) for c, v in likelihood.items()}
     posterior = combine(prior, likelihood)
     ranked, margin = top_margin(posterior)
     calls = 1
@@ -132,4 +185,5 @@ def decide(g, judge, issue: dict, t: int, prior: dict[str, float], gate: float) 
     owner = ranked[0] if margin >= gate else None
     reason = (f"@{ranked[0]} leads by {margin:.2f}" if owner
               else f"too close to call (margin {margin:.2f} < {gate:.2f}); ask a human")
-    return Decision(owner, posterior, margin, calls, int((time.time() - t0) * 1000), tokens, reason, likelihood)
+    return Decision(owner, posterior, margin, calls, int((time.time() - t0) * 1000), tokens, reason, likelihood,
+                    p_handoff)

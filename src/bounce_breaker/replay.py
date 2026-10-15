@@ -14,7 +14,8 @@ Rules (fixed before any results were looked at):
       jev_nograph  - same decide() as below, candidates = bot pick + people most often assigned in the
                      14 days before T, uniform prior (no learned handoffs, no ownership filter)
       jev_graph    - decide() with graph candidates and graph prior
-  * Gate utility (for TUNE only): +1 correct route, -1 wrong route, -0.5 escalation.
+  * Gate utility (TUNE only, on issues the bot's pick handed off): +1 correct, -1 wrong, -0.5 escalation.
+  * Memory trust: contrastive Jev runs only if the bot's pick has >= 10 recorded forwards before T.
   * Forwarding hops avoided (on routed issues): +1 if we skipped a bot pick that was later handed
     off and picked the final owner; -1 if we moved away from a bot pick that was actually right.
 
@@ -34,7 +35,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .db import PROJECT_ROOT, QUERY_TIMEOUT_MS, get_graph
-from .decide import Decision, JevJudge, decide
+from .decide import Decision, JevJudge, decide, profiles
 from .events import Issue, derive_handoffs, final_owners, is_bot, parse_issue, ts
 from .learner import forget_all, record_handoffs
 from .router import areas_at, candidate_owners, owner_prior
@@ -52,6 +53,7 @@ DEV_END = ts("2026-08-25T00:00:00Z")
 HOLDOUT_END = ts("2026-09-15T00:00:00Z")
 DAY = 86_400
 K = 5
+MEMORY_TRUST_MIN_FORWARDS = 10  # pre-registered: only trust handoff memory for people with >= 10 forwards before T
 GATES = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
 UTILITY = {"correct": 1.0, "wrong": -1.0, "escalated": -0.5}
 
@@ -76,22 +78,23 @@ class CachedJudge:
         self.out = CACHE.open("a")
         self.lock = threading.Lock()
 
-    def _call(self, kind: str, issue: dict, profs: dict):
-        key = hashlib.sha256(json.dumps([kind, issue["title"], issue["body"][:1500], profs],
+    def _call(self, kind: str, issue: dict, profs: dict, *extra):
+        key = hashlib.sha256(json.dumps([kind, issue["title"], issue["body"][:1500], profs, list(extra)],
                                         sort_keys=True).encode()).hexdigest()
         if key in self.mem:
-            return self.mem[key][0], 0  # cached: no new tokens spent
+            v = self.mem[key]
+            return (v[0], 0, *v[2:])  # cached: no new tokens spent
         if self.inner is None:
             raise RuntimeError("cache miss with no live judge")
-        val = getattr(self.inner, kind)(issue, profs)
+        val = getattr(self.inner, kind)(issue, profs, *extra)
         with self.lock:
             self.mem[key] = list(val)
             self.out.write(json.dumps({"k": key, "v": list(val)}) + "\n")
             self.out.flush()
         return val
 
-    def fit(self, issue, profs):
-        return self._call("fit", issue, profs)
+    def fit(self, issue, profs, contrast=None):
+        return self._call("fit", issue, profs, contrast)
 
     def tiebreak(self, issue, profs):
         return self._call("tiebreak", issue, profs)
@@ -114,6 +117,7 @@ class Row:
     latency_ms: int
     input_tokens: int
     reason: str
+    p_handoff: float | None = None
 
 
 def period_of(t: int) -> str:
@@ -152,22 +156,36 @@ def route(g, judge, arm: str, issue: Issue, body: str, gate: float) -> Row:
         d = Decision(cands[0], {}, 1.0, 0, int((time.time() - t0) * 1000), 0, " | ".join(cs[0].reasons))
     elif arm in ("graph", "jev_graph"):
         prior, path = owner_prior(g, t, bot_pick, areas_at(g, issue.number, t), k=K)
+        forwards = g.ro_query("MATCH (:Person {login: $a})-[h:HANDED_OFF]->() WHERE h.at < $t "
+                              "AND h.kind IN ['forward', 'reassign'] RETURN count(h)",
+                              {"a": bot_pick, "t": t}, timeout=QUERY_TIMEOUT_MS).result_set[0][0]
         top = sorted(prior, key=lambda c: -prior[c])[:K]
         cands = top
         prior = {c: prior[c] / sum(prior[c2] for c2 in top) for c in top}
         if arm == "graph":
             d = Decision(top[0], prior, 1.0, 0, int((time.time() - t0) * 1000), 0, path[top[0]])
+        elif forwards < MEMORY_TRUST_MIN_FORWARDS:
+            d = Decision(bot_pick, prior, 1.0, 0, int((time.time() - t0) * 1000), 0,
+                         f"@{bot_pick} has only {forwards} recorded forwards; memory not trusted, keep the pick")
         else:
-            d = decide(g, judge, doc, t, prior, gate)
+            d = decide(g, judge, doc, t, prior, gate, first_pick=bot_pick)
     elif arm == "jev_nograph":
         rows = g.ro_query(RECENT_ASSIGNEES, {"t": t, "since": t - 14 * DAY, "k": K},
                           timeout=QUERY_TIMEOUT_MS).result_set
         cands = list(dict.fromkeys([bot_pick] + [r[0] for r in rows]))[:K]
         d = decide(g, judge, doc, t, {c: 1 / len(cands) for c in cands}, gate)
+    elif arm == "jev_keep":  # control: Jev alone asks "should the bot's pick keep this?" - no alternatives
+        cands = [bot_pick]
+        profs = profiles(g, [bot_pick], issue.number, t)
+        lk, tokens, _ = judge.fit(doc, profs)
+        p_keep = lk[bot_pick]
+        d = Decision(bot_pick, {bot_pick: p_keep}, p_keep, 1, int((time.time() - t0) * 1000), tokens,
+                     f"keep probability {p_keep:.2f}")
     else:
         raise ValueError(arm)
     return Row(issue.number, period_of(t), t, bot_pick, truth, handed, arm, d.owner, d.margin, cands,
-               any(c in truth for c in cands), d.jev_calls, d.latency_ms, d.input_tokens, d.reason)
+               any(c in truth for c in cands), d.jev_calls, d.latency_ms, d.input_tokens, d.reason,
+               d.p_handoff)
 
 
 def outcome(r: Row) -> str:
@@ -247,7 +265,8 @@ def run(arms: list[str], gate: float | None, limit: int | None, workers: int, li
     for arm in arms:
         if not arm.startswith("jev"):
             continue
-        tune_rows = [r for r in rows if r.arm == arm and r.period == "tune"]
+        # Pre-registered: tune on TUNE issues the bot's pick handed off (pooled utility always says "never escalate").
+        tune_rows = [r for r in rows if r.arm == arm and r.period == "tune" and r.bot_pick_handed_off]
         best = max(gates, key=lambda gv: sum(UTILITY[outcome(r)] for r in gated(tune_rows, gv)))
         tuned[arm] = best
     final = [r for r in rows if not r.arm.startswith("jev")] + \

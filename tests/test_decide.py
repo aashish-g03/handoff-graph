@@ -9,12 +9,12 @@ class FakeGraph:
 
 
 class FakeJudge:
-    def __init__(self, fit, tie=None):
-        self._fit, self._tie, self.calls = fit, tie or {}, []
+    def __init__(self, fit, tie=None, p_handoff=None):
+        self._fit, self._tie, self.calls, self.p = fit, tie or {}, [], p_handoff
 
-    def fit(self, issue, profs):
+    def fit(self, issue, profs, contrast=None):
         self.calls.append("fit")
-        return {c: self._fit[c] for c in profs}, 100
+        return {c: self._fit[c] for c in profs}, 100, (self.p if contrast else None)
 
     def tiebreak(self, issue, profs):
         self.calls.append("tiebreak")
@@ -60,3 +60,15 @@ def test_graph_prior_shifts_the_decision():
     judge = FakeJudge({"a": 0.6, "b": 0.5})
     d = decide(FakeGraph(), judge, ISSUE, 0, {"a": 0.1, "b": 0.9}, gate=0.2)
     assert d.owner == "b"
+
+
+def test_handoff_score_moves_mass_from_first_pick_to_alternatives():
+    judge = FakeJudge({"a": 0.6, "b": 0.6}, p_handoff=0.9)
+    d = decide(FakeGraph(), judge, ISSUE, 0, {"a": 0.7, "b": 0.3}, gate=0.1, first_pick="a")
+    assert d.owner == "b"
+
+
+def test_low_handoff_score_keeps_first_pick():
+    judge = FakeJudge({"a": 0.6, "b": 0.6}, p_handoff=0.1)
+    d = decide(FakeGraph(), judge, ISSUE, 0, {"a": 0.7, "b": 0.3}, gate=0.1, first_pick="a")
+    assert d.owner == "a"
