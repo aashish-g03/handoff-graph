@@ -38,6 +38,7 @@ from .db import PROJECT_ROOT, QUERY_TIMEOUT_MS, get_graph
 from .decide import Decision, JevJudge, decide, profiles
 from .events import Issue, derive_handoffs, final_owners, is_bot, parse_issue, ts
 from .learner import forget_all, record_handoffs
+from .agent import route_issue
 from .router import areas_at, candidate_owners, owner_prior
 
 RAW = PROJECT_ROOT / "data/raw/vscode_issues_2026-06-01_2026-10-15.json"
@@ -53,7 +54,6 @@ DEV_END = ts("2026-08-25T00:00:00Z")
 HOLDOUT_END = ts("2026-09-15T00:00:00Z")
 DAY = 86_400
 K = 5
-MEMORY_TRUST_MIN_FORWARDS = 10  # pre-registered: only trust handoff memory for people with >= 10 forwards before T
 GATES = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
 UTILITY = {"correct": 1.0, "wrong": -1.0, "escalated": -0.5}
 
@@ -154,21 +154,13 @@ def route(g, judge, arm: str, issue: Issue, body: str, gate: float) -> Row:
         cs = candidate_owners(g, issue.number, t, bot_pick, k=K)
         cands = [c.login for c in cs]
         d = Decision(cands[0], {}, 1.0, 0, int((time.time() - t0) * 1000), 0, " | ".join(cs[0].reasons))
-    elif arm in ("graph", "jev_graph"):
+    elif arm == "graph":
         prior, path = owner_prior(g, t, bot_pick, areas_at(g, issue.number, t), k=K)
-        forwards = g.ro_query("MATCH (:Person {login: $a})-[h:HANDED_OFF]->() WHERE h.at < $t "
-                              "AND h.kind IN ['forward', 'reassign'] RETURN count(h)",
-                              {"a": bot_pick, "t": t}, timeout=QUERY_TIMEOUT_MS).result_set[0][0]
-        top = sorted(prior, key=lambda c: -prior[c])[:K]
-        cands = top
-        prior = {c: prior[c] / sum(prior[c2] for c2 in top) for c in top}
-        if arm == "graph":
-            d = Decision(top[0], prior, 1.0, 0, int((time.time() - t0) * 1000), 0, path[top[0]])
-        elif forwards < MEMORY_TRUST_MIN_FORWARDS:
-            d = Decision(bot_pick, prior, 1.0, 0, int((time.time() - t0) * 1000), 0,
-                         f"@{bot_pick} has only {forwards} recorded forwards; memory not trusted, keep the pick")
-        else:
-            d = decide(g, judge, doc, t, prior, gate, first_pick=bot_pick)
+        cands = sorted(prior, key=lambda c: -prior[c])[:K]
+        d = Decision(cands[0], prior, 1.0, 0, int((time.time() - t0) * 1000), 0, path[cands[0]])
+    elif arm == "jev_graph":
+        r = route_issue(g, judge, doc, t, bot_pick, gate)
+        cands, d = r.candidates, r.decision
     elif arm == "jev_nograph":
         rows = g.ro_query(RECENT_ASSIGNEES, {"t": t, "since": t - 14 * DAY, "k": K},
                           timeout=QUERY_TIMEOUT_MS).result_set

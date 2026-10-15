@@ -25,3 +25,8 @@ On the 259 bounced issues, the graph's top learned alternative was the final own
 - Two earlier designs were inspected on the pre-protocol score period before the DEV/HOLDOUT split was imposed.
 - A 200-issue sample touched HOLDOUT dates before the split.
 - A bug (Score probabilities keyed by int) was fixed during DEV.
+
+## Notes
+- `handoffs_learned` is 1,410 here (vs 1,937 over the full data) because the learner advances only up to the last routed day (Sep 15). Nothing after that is learned.
+- **Handoff patterns drift.** The memory's top alternative matched the final owner on 38% of DEV bounces (Jul 20-Aug 24) but 13% of HOLDOUT bounces (Aug 25-Sep 15). Who passes what to whom in this team changes within weeks, which argues for a router that keeps learning online rather than a classifier trained once.
+- **Reproducibility.** After routing logic moved into `agent.route_issue` (shared with the MCP server), an offline re-run from cached Jev answers reproduced every HOLDOUT number exactly (`results/replay_20261015T203413Z.json`).
