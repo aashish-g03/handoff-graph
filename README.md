@@ -1,14 +1,27 @@
 # Handoff Graph
 
-**Issue routing that remembers who hands what to whom.** Every time an issue is passed on ("not me, ask @y"), Handoff Graph records it in a FalkorDB graph. A decision model (TypeSafe Jev) then routes new issues using that memory. Every decision comes with the graph path behind it, and when the evidence is weak it asks a human instead of guessing.
+**Issue routing that remembers who hands what to whom.**
 
-**What we measured** (one-time held-out replay on 1,133 real microsoft/vscode issues; see [docs/RESULTS.md](docs/RESULTS.md)):
-- **Graph memory is what makes AI routing usable.** With it, Jev routes 96% of issues itself at 77% precision. Without it, Jev has to hand 62–66% of issues to a human, and is often wrong when it does route.
-- **It does not beat VS Code's own triage bot** (74.3% vs 76.9% right first time), and it did not reduce bounces on held-out data.
-- **Handoff patterns drift within weeks** (the memory's best alternative was right on 38% of bounces in July–August vs 13% in late August–September). That argues for routers that keep learning online.
+Every time an issue is passed on ("not me, ask @y"), a *learner* agent records the handoff in a FalkorDB graph. A *router* agent reads that memory, asks a decision model (TypeSafe Jev) one narrow question per candidate, and then does one of three things: routes the issue, keeps the current owner, or asks a human. Every decision comes with the graph path that justifies it.
+
+**Live MCP server:** `https://handoff-graph-mcp-production.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`)
+
+### What we found, measured on two held-out periods of real microsoft/vscode issues
+
+| | Without graph memory | With graph memory |
+|---|---|---|
+| Issues the agent must hand to a human | **58–67%** | **4–7%** |
+| Right owner among the agent's candidates | 71–82% | **73–84%** (vs 62–77% for the bot's single pick) |
+| Explanation for each decision | none | the graph path, e.g. *"@benibenj handed 75 of 405 such issues to @hawkticehurst (#325171, …)"* |
+
+1. **Memory is what makes the agent usable.** The same decision model and decision code goes from escalating about two-thirds of issues to roughly one in twenty. That held on both held-out periods (summer n = 1,133; spring n = 3,064).
+2. **It does not beat VS Code's own triage bot** on getting the owner right first time (summer 74.3% vs 76.9%; spring 58.5% vs 62.1%).
+   - Our attempt to beat it on precision (a pre-registered +2 points) worked on development data (+3.8) and failed on unseen data (+0.5).
+   - Most handoffs depend on things the issue text doesn't show: workload, vacations, team roles.
+3. **Handoff memory goes stale within weeks.** The memory's best alternative named the eventual owner of 38% of bounced issues in July–August, but 13% in late August–September. Agent memory about people has to keep learning; a model trained once won't stay right.
 
 Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) (WeMakeDevs × FalkorDB).
-Tracks: **Agents That Act on Connected Data** and **Agent Memory and Coordination**.
+**Track: Agent Memory and Coordination** (also relevant to Agents That Act on Connected Data).
 
 ## The problem
 
@@ -23,7 +36,29 @@ In **microsoft/vscode** (June to mid-October 2026):
 
 ## Results
 
-_Filled in from the one-time HOLDOUT run; see [docs/RESULTS.md](docs/RESULTS.md)._
+All numbers come from a time-ordered replay of real triage, where each issue is routed at the moment VS Code's bot first assigned it. Each held-out period was run **once** with a frozen design. Full tables, protocol and disclosures are in [docs/RESULTS.md](docs/RESULTS.md).
+
+**Summer held-out period** (Aug 25 – Sep 15 2026, 1,133 issues, design v1)
+
+| Arm | Right first time | Escalated | Precision when routed |
+|---|---|---|---|
+| VS Code triage bot (deployed) | 76.9% | 0% | 76.9% |
+| Jev, no graph (same decision code) | 18.4% | 66% | 55.0% |
+| Jev "keep it?" check, no graph | 33.2% | 62% | 86.4% |
+| **Jev + graph memory** | 74.3% | **4%** | 77.2% |
+
+**Spring held-out period** (Apr 1 – May 15 2026, 3,064 issues, fresh data and a separate graph, design v2)
+
+| Arm | Right first time | Escalated | Precision when routed |
+|---|---|---|---|
+| VS Code triage bot (deployed) | 62.1% | 0% | 62.1% |
+| Jev, no graph | 15.0% | 64.5% | 42.2% |
+| Jev "keep it?" check, no graph | 28.2% | 58.1% | 67.3% |
+| Graph only (v2, no Jev) | 55.6% | 12.9% | 63.8% |
+| **Jev + graph memory (v2)** | 58.5% | **6.6%** | 62.6% |
+
+- **Pre-registered win condition** for v2 (precision ≥ bot + 2 points at ≤ 15% escalation): **not met**.
+- **Cost:** about one Jev call per issue, median latency about 0.4 s, and under $0.0001 per routed issue.
 
 ## How it works
 
@@ -111,7 +146,11 @@ The model never writes Cypher. The MCP server exposes a fixed set of tools over 
 | `handoff_history(person)` | Who this person hands work to, how often, with example issues |
 | `record_handoff(issue, from, to)` | Teaches the graph a new "not me, ask @y" |
 
-Add it to Claude Code with `claude mcp add handoff-graph -- uv --directory /path/to/handoff-graph run python -m handoff_graph.mcp_server`.
+Use the hosted server from Claude Code:
+```bash
+claude mcp add --transport http handoff-graph https://handoff-graph-mcp-production.up.railway.app/mcp
+```
+Or run it locally: `claude mcp add handoff-graph -- uv --directory /path/to/handoff-graph run python -m handoff_graph.mcp_server`.
 
 ## Evaluation protocol
 
