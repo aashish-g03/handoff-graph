@@ -19,7 +19,7 @@ Rules (fixed before any results were looked at):
   * Forwarding hops avoided (on routed issues): +1 if we skipped a bot pick that was later handed
     off and picked the final owner; -1 if we moved away from a bot pick that was actually right.
 
-    uv run python -m bounce_breaker.replay --arms bot,graph,jev_nograph,jev_graph [--limit N]
+    uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_graph [--limit N]
 """
 from __future__ import annotations
 

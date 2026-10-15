@@ -1,4 +1,4 @@
-# Bounce Breaker — Scope (v2, 2026-10-16, advisor-revised)
+# Handoff Graph — Scope (v2, 2026-10-16, advisor-revised)
 
 **One line:** an issue-routing agent for microsoft/vscode. It learns from every reassignment and routes the next similar issue straight to the person who ends up owning it. Each decision shows its graph path, and a confidence gate asks a human instead of guessing.
 

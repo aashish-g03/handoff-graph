@@ -1,4 +1,4 @@
-from bounce_breaker.decide import combine, decide, top_margin
+from handoff_graph.decide import combine, decide, top_margin
 
 
 class FakeGraph:

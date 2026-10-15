@@ -1,6 +1,11 @@
-# Bounce Breaker
+# Handoff Graph
 
-**An issue router that learns from every reassignment.** When a ticket bounces ("not me, ask @y"), Bounce Breaker remembers it in a FalkorDB graph. When the next similar ticket arrives, it routes it straight to the person who will own it and shows the graph path behind the decision. When it isn't sure, it asks a human instead of guessing.
+**Issue routing that remembers who hands what to whom.** Every time an issue is passed on ("not me, ask @y"), Handoff Graph records it in a FalkorDB graph. A decision model (TypeSafe Jev) then routes new issues using that memory. Every decision comes with the graph path behind it, and when the evidence is weak it asks a human instead of guessing.
+
+**What we measured** (one-time held-out replay on 1,133 real microsoft/vscode issues; see [docs/RESULTS.md](docs/RESULTS.md)):
+- **Graph memory is what makes AI routing usable.** With it, Jev routes 96% of issues itself at 77% precision. Without it, Jev has to hand 62–66% of issues to a human, and is often wrong when it does route.
+- **It does not beat VS Code's own triage bot** (74.3% vs 76.9% right first time), and it did not reduce bounces on held-out data.
+- **Handoff patterns drift within weeks** (the memory's best alternative was right on 38% of bounces in July–August vs 13% in late August–September). That argues for routers that keep learning online.
 
 Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) (WeMakeDevs × FalkorDB).
 Tracks: **Agents That Act on Connected Data** and **Agent Memory and Coordination**.
@@ -31,12 +36,12 @@ _Filled in from the one-time HOLDOUT run; see [docs/RESULTS.md](docs/RESULTS.md)
 ## Run it
 
 ```bash
-docker run -d --name bb-falkordb -p 6380:6379 -p 3001:3000 falkordb/falkordb:latest
+docker run -d --name hg-falkordb -p 6380:6379 -p 3001:3000 falkordb/falkordb:latest
 cp .env.example .env   # add TYPESAFE_API_KEY
 uv sync
-uv run python -m bounce_breaker.ingest data/raw/vscode_issues_2026-06-01_2026-10-15.json --bodies data/raw/vscode_bodies.json
-uv run python -m bounce_breaker.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph
-uv run python -m bounce_breaker.mcp_server        # MCP over stdio
+uv run python -m handoff_graph.ingest data/raw/vscode_issues_2026-06-01_2026-10-15.json --bodies data/raw/vscode_bodies.json
+uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph
+uv run python -m handoff_graph.mcp_server        # MCP over stdio
 ```
 
 ## Prior art
@@ -45,7 +50,7 @@ uv run python -m bounce_breaker.mcp_server        # MCP over stdio
 - Microsoft DeepTriage (KDD 2020) and DeepCT (ASE 2019)
 - Linear Triage Intelligence, Mozilla bugbug, ServiceNow Predictive Intelligence, and Prow's blunderbuss plugin
 
-Bounce Breaker differs from these in four ways:
+Handoff Graph differs from these in four ways:
 - it learns handoffs online, as they happen;
 - it gives every decision with an explainable graph path;
 - it escalates when unsure, using a confidence gate;

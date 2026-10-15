@@ -1,4 +1,4 @@
-from bounce_breaker.events import parse_issue, derive_handoffs, final_owners, is_area_label
+from handoff_graph.events import parse_issue, derive_handoffs, final_owners, is_area_label
 
 
 def _issue(events, labels=(), number=1, created="2026-07-01T00:00:00Z"):
@@ -76,7 +76,7 @@ def test_labels_at_respects_removal():
         _label("terminal", "x", "2026-07-01T05:00:00Z", removed=True),
         _label("chat", "x", "2026-07-01T06:00:00Z"),
     ]))
-    from bounce_breaker.events import ts
+    from handoff_graph.events import ts
     assert issue.areas_at(ts("2026-07-01T01:00:00Z")) == ("terminal",)
     assert issue.areas_at(ts("2026-07-01T07:00:00Z")) == ("chat",)
 

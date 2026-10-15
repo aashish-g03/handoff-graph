@@ -14,7 +14,7 @@ QUERY_TIMEOUT_MS = 30_000
 
 
 def graph_name(repo: str) -> str:
-    return "bb:" + repo.replace("/", ":")
+    return "hg:" + repo.replace("/", ":")
 
 
 def connect():

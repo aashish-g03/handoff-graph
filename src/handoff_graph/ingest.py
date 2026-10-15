@@ -3,7 +3,7 @@
 Idempotent: everything is MERGEd on stable keys, so running it twice gives the same graph.
 Learned handoff edges are NOT written here; the learner agent writes them as time advances.
 
-    uv run python -m bounce_breaker.ingest data/raw/vscode_issues_*.json [--bodies data/raw/vscode_bodies.json]
+    uv run python -m handoff_graph.ingest data/raw/vscode_issues_*.json [--bodies data/raw/vscode_bodies.json]
 """
 from __future__ import annotations
 

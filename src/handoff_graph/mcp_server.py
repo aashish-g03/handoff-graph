@@ -1,9 +1,9 @@
-"""MCP server: lets any MCP client (Claude Code, Cursor, ...) route issues with Bounce Breaker.
+"""MCP server: lets any MCP client (Claude Code, Cursor, ...) route issues with Handoff Graph.
 
 Tools are a fixed catalogue over parameterised Cypher; the model never writes queries.
 
-    uv run python -m bounce_breaker.mcp_server                 # stdio
-    uv run python -m bounce_breaker.mcp_server --http 8765     # streamable HTTP
+    uv run python -m handoff_graph.mcp_server                 # stdio
+    uv run python -m handoff_graph.mcp_server --http 8765     # streamable HTTP
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from .decide import JevJudge
 from .events import Handoff
 from .learner import record_handoffs
 
-mcp = MCPServer("bounce-breaker")
+mcp = MCPServer("handoff-graph")
 _judge: JevJudge | None = None
 
 

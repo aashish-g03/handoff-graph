@@ -91,4 +91,4 @@ FULL VS Code pull, issues created 2026-06-01..10-15 (vscode_all.json):
   - With memory: @hawkticehurst and @mrleemurray tie (64 earlier forwards each from @benibenj). The graph narrows to the right pair; the TEXT has to break the tie.
 - Next: Jev Choice over the graph candidates, using a per-candidate profile (titles of issues they previously received from the same first pick).
 - Local ports: FalkorDB 6380, Browser 3001 (6379 is taken on this machine). The docker compose plugin is broken locally; plain `docker run` is used and docker-compose.yml is kept for submitters.
-HOLDOUT command: uv run python -m bounce_breaker.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph --holdout  (commit d974fa6, 2026-10-15T20:26:14Z)
+HOLDOUT command: uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph --holdout  (commit d974fa6, 2026-10-15T20:26:14Z)

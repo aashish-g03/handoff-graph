@@ -1,7 +1,7 @@
 [project]
-name = "bounce-breaker"
+name = "handoff-graph"
 version = "0.1.0"
-description = "Add your description here"
+description = "Issue routing that remembers who hands what to whom (FalkorDB + TypeSafe Jev)"
 readme = "README.md"
 authors = [
     { name = "aashish-g03", email = "aashishg2003@gmail.com" }

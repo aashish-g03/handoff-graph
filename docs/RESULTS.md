@@ -1,6 +1,6 @@
 # Results: one-time HOLDOUT run (frozen design, commit d974fa6)
 
-Command: `uv run python -m bounce_breaker.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph --holdout`
+Command: `uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph --holdout`
 File: `results/replay_20261015T203103Z.json`.
 - Model: jev-1.14.0.
 - HOLDOUT covers issues routed by the VS Code triage bot between 2026-08-25 and 2026-09-15 (n = 1,133). Truth had 30+ days to settle.
