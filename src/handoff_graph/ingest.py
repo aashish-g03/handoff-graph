@@ -96,8 +96,12 @@ def main() -> None:
     ap.add_argument("raw")
     ap.add_argument("--bodies")
     ap.add_argument("--repo", default="microsoft/vscode")
+    ap.add_argument("--body-chars", type=int, default=None,
+                    help="truncate bodies (the router only reads the first 1500 chars); keeps small cloud tiers small")
     args = ap.parse_args()
     bodies = json.load(open(args.bodies)) if args.bodies else None
+    if bodies and args.body_chars:
+        bodies = {k: v[: args.body_chars] for k, v in bodies.items()}
     print(ingest(json.load(open(args.raw)), bodies, args.repo))
 
 
