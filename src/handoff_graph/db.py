@@ -18,11 +18,13 @@ def graph_name(repo: str) -> str:
 
 
 def connect():
+    """Local FalkorDB by default; set HG_TARGET=cloud to use the FALKORDB_CLOUD_* settings."""
+    prefix = "FALKORDB_CLOUD_" if os.getenv("HG_TARGET") == "cloud" else "FALKORDB_"
     return FalkorDB(
-        host=os.getenv("FALKORDB_HOST", "localhost"),
-        port=int(os.getenv("FALKORDB_PORT", "6380")),
-        username=os.getenv("FALKORDB_USERNAME") or None,
-        password=os.getenv("FALKORDB_PASSWORD") or None,
+        host=os.getenv(prefix + "HOST") or "localhost",
+        port=int(os.getenv(prefix + "PORT") or "6380"),
+        username=os.getenv(prefix + "USERNAME") or None,
+        password=os.getenv(prefix + "PASSWORD") or None,
     )
 
 
