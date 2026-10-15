@@ -59,6 +59,17 @@ All numbers come from a time-ordered replay of real triage, where each issue is 
 
 - **Pre-registered win condition** for v2 (precision ≥ bot + 2 points at ≤ 15% escalation): **not met**.
 - **Cost:** about one Jev call per issue, median latency about 0.4 s, and under $0.0001 per routed issue.
+- **The deployed MCP server runs the v1 design** (the summer table).
+
+**Why it can't beat the bot on first-try accuracy.** We checked the ceiling on development data. Even perfect knowledge of *which* issues get forwarded, sending each to the pick's most common recent handoff target, would reach about 85% vs the bot's 78%. That 7-point gap isn't visible in the issue at routing time. We tested four signals:
+- issue text: AUC 0.57;
+- the pick's recent forward rate: AUC 0.74, but no positive override rule;
+- who filed it: the bot still wins;
+- forwarding streaks.
+
+Handoffs depend on workload, leave and conversations the router can't see. The median handoff happens about a day after routing.
+
+**What memory sees that the bot doesn't.** When the bot's pick has forwarded their last three issues in a row, the bot's next pick for them was right only 3 times out of 12 (development data). They're usually away. The graph knows that; the bot keeps assigning to them. The case is rare (under 1% of issues), but it shows the kind of judgement memory makes possible.
 
 ## How it works
 
