@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+html,body{margin:0}
+.t{position:relative;width:1280px;height:720px;background:var(--graphite);overflow:hidden}
+.t::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--graphite-rule) 1px,transparent 1px),linear-gradient(90deg,var(--graphite-rule) 1px,transparent 1px);background-size:64px 64px;opacity:.2}
+.in{position:absolute;left:60px;top:54px;right:60px;bottom:60px}
+.kick{font:500 30px "JetBrains Mono";color:var(--signal);letter-spacing:.05em;text-transform:uppercase}
+.pair{display:flex;align-items:center;gap:40px;margin-top:34px}
+.side b{display:block;font:500 290px/0.9 "Space Grotesk";letter-spacing:-.05em}
+.wo b{color:var(--on-g-2)} .wi b{color:#fff}
+.side span{display:block;font:500 34px "JetBrains Mono";margin-top:14px;letter-spacing:.02em}
+.wo span{color:var(--on-g-2)} .wi span{color:var(--signal)}
+.arrow{font:500 130px/1 "Space Grotesk";color:var(--signal);margin-top:-60px}
+.line{font:500 46px "Space Grotesk";color:var(--on-g);margin-top:40px;letter-spacing:-.01em}
+.foot{position:absolute;left:60px;bottom:54px;font:500 44px "Space Grotesk";color:var(--on-g);letter-spacing:-.02em}
+.fk{position:absolute;right:250px;bottom:62px;font:500 28px "JetBrains Mono";color:var(--on-g-2)}
+</style></head><body><div class="t"><div class="in">
+<div class="kick">Same AI, with and without graph memory</div>
+<div class="pair">
+ <div class="side wo"><b>66%</b><span>without memory</span></div>
+ <div class="arrow">→</div>
+ <div class="side wi"><b>4%</b><span>with graph memory</span></div>
+</div>
+<div class="line">How often the AI has to ask a human</div>
+</div>
+<div class="foot">Handoff Graph</div><div class="fk">FalkorDB</div>
+</div></body></html>
