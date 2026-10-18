@@ -5,7 +5,7 @@
 
 ## Before recording
 - Use a terminal font of 18pt or larger, a dark theme, a window at least 120 columns wide, and the repo as the working directory.
-- FalkorDB Browser: open `http://localhost:3001` (local) or use **Connect** in FalkorDB Cloud. Log in and open graph `hg:microsoft:vscode`.
+- FalkorDB Browser: open `http://localhost:3001` (local) (the live demo database runs on Railway, private network only). Log in and open graph `hg:microsoft:vscode`.
 - In Claude Code, add the hosted MCP server once:
   ```bash
   claude mcp add --transport http handoff-graph https://handoff-graph.up.railway.app/mcp
@@ -43,7 +43,7 @@ Pause on the final summary block. Point at **asks a human: 66.5% → 3.7%**.
 **Prompt:**
 > Use handoff-graph to route this new VS Code issue. The triage bot would assign it to benibenj. Title: "Tab titles render with no text in the new modern UI". Body: "After enabling the new modern workbench UI, editor tab titles appear blank until hovered. macOS."
 
-> "Here's the hosted MCP server: Railway, FalkorDB Cloud, Jev. It names an owner, gives a probability for every candidate, and for each one the graph path behind it: benibenj handed 75 of 405 such issues to hawkticehurst, with the issue numbers. The model never writes a query. It gets a fixed set of tools over parameterised Cypher."
+> "Here's the hosted MCP server: Railway, FalkorDB on Railway, Jev. It names an owner, gives a probability for every candidate, and for each one the graph path behind it: benibenj handed 75 of 405 such issues to hawkticehurst, with the issue numbers. The model never writes a query. It gets a fixed set of tools over parameterised Cypher."
 
 Optional, if there's time: ask *"Who does pwang347 usually hand issues to?"* to show `handoff_history`.
 
