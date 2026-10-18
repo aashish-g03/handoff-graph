@@ -97,7 +97,7 @@ def record_handoff(issue_number: int, from_person: str, to_person: str, repo: st
 WEB = Path(__file__).parent / "web"
 _hits: dict[str, deque] = defaultdict(deque)
 _hits_lock = threading.Lock()
-PER_IP_PER_MIN, GLOBAL_PER_MIN = 6, 60
+PER_IP_PER_MIN, GLOBAL_PER_MIN = 60, 360
 
 
 def _allowed(ip: str) -> bool:

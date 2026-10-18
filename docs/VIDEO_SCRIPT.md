@@ -8,7 +8,7 @@ Everything on camera is the live page, https://handoff-graph.up.railway.app/, pl
 ## Before recording
 
 - **Screen:** 1920×1080 at 125–150% browser zoom, other tabs closed. Shot 2 carries the video, so the path chip must be readable.
-- **Rate limit:** live routing allows 6 requests per minute per visitor.
+- **Rate limit:** live routing allows 60 requests per minute per visitor (and 360 per minute in total).
   - Do one warm-up route at least a minute before you start recording.
   - Don't rehearse the three clicks again in the minute before a take, or the third click can be refused on camera.
 - **Check the three examples right before recording** (last checked live 2026-10-18):
