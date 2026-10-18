@@ -10,7 +10,7 @@ cover_image: https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/do
 >
 > [Live demo](https://handoff-graph.up.railway.app) (no sign-up) | [Code](https://github.com/aashish-g03/handoff-graph) | [MCP server](https://handoff-graph.up.railway.app/mcp) | Built for Graph Hacks (WeMakeDevs x FalkorDB), Track 2: Agent Memory and Coordination
 
-{% embed VIDEO_URL %}
+{% embed https://youtu.be/zMDPJWjogcw %}
 
 ---
 
