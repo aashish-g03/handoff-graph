@@ -39,7 +39,7 @@ ORDER BY times DESC, last_at DESC
 It's very easy to fool yourself on a task like this, so most of the effort went into the evaluation.
 
 - **Time-ordered replay.** Each historical issue is routed at the exact moment VS Code's bot first assigned it. The learner advances day by day, and every router query filters `at < $t`, so a decision can never see a later handoff.
-- **No label leakage.** VS Code issues gain area labels over time, often from the same person who later reassigns them. Only 389 of 1,937 handoffs had a label at the moment of routing. So the router only sees labels that existed at that moment, and otherwise relies on the issue text.
+- **No label leakage.** VS Code issues gain area labels over time, often from the same person who later reassigns them. Only about one handoff in five had an area label at the moment of routing. So the router only sees labels that existed at that moment, and otherwise relies on the issue text.
 - **A fair comparison.** "Without memory" means the *same* Jev model and the *same* decision code. Only the candidates and prior come from somewhere else: the people most often assigned in the previous two weeks.
 - **Frozen design, held-out data, run once.** I did all design work on a development window. Then I froze the design, committed the exact command, and ran it once on a held-out period (summer: Aug 25 – Sep 15, 1,133 issues). Later I fetched a second, completely separate period (spring: Apr 1 – May 15, 3,064 issues), built its own graph and ran it once too.
 
@@ -80,7 +80,7 @@ FalkorDB's per-graph isolation made one-graph-per-repository free. Queries staye
 
 - **In the browser:** https://handoff-graph.up.railway.app. Route a real VS Code issue live, explore the handoff memory, or step through the recorded held-out decisions.
 - **From Claude Code:** `claude mcp add --transport http handoff-graph https://handoff-graph.up.railway.app/mcp`
-- **Reproduce the numbers:** the repo includes the recorded held-out results and the cached decision-model answers, so the replay runs without an API key.
+- **Reproduce the numbers:** the repo includes the recorded held-out results and the cached decision-model answers. After fetching the public issue data, `--offline` re-runs the replay without an API key.
 
 What I'd do next is change the job, not the model. Instead of competing with the bot on the first guess, the router would step in only after an issue sits untouched with its assignee for a few hours, as a second triager. That's where memory of who actually takes what should matter most.
 

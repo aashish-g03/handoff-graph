@@ -20,7 +20,7 @@ Everything on camera is the live page, https://handoff-graph.up.railway.app/, pl
   | #341245, "API: let extensions open an editor in a new floating window…" | @benibenj | **Keep @benibenj** (kept 238 of 405) |
 
 - **FalkorDB Browser (Shot 3):**
-  - Open http://localhost:3001 and connect to `localhost:6380`.
+  - Open http://localhost:3001 and log in with host `localhost`, port `6379` (the Browser runs inside the container, so use the inner port, not 6380). Leave username and password empty.
   - Select graph `hg:microsoft:vscode`; its memory holds about 2,000 `HANDED_OFF` edges.
   - Paste the query below and run it once before recording, so the layout settles:
   ```cypher
@@ -49,7 +49,7 @@ Everything on camera is the live page, https://handoff-graph.up.railway.app/, pl
 > "Same agent, three different decisions, and each one is justified by a path in the graph."
 
 ## Shot 3: What's underneath (0:55–1:25)
-**Screen:** FalkorDB Browser with the query above. Optionally finish on the page's **What the memory knows** section with `benibenj` selected (hawkticehurst 75, mrleemurray 64).
+**Screen:** FalkorDB Browser with the query above. Optionally finish on the page's **What the memory knows** section with `benibenj` selected (hawkticehurst 76, mrleemurray 65; the explorer counts every handoff kind, the routing path counts forwards only).
 
 > "This is the memory, in FalkorDB. Every reassignment becomes a timestamped HANDED_OFF edge between two people. Two agents share this graph. The learner is the only one that writes: it records each handoff as it happens. The router only reads, and only what was true before the issue arrived. Every query filters on the edge's timestamp, so a decision can never see the future. Each repository gets its own graph. The model never writes Cypher. It gets a fixed set of tools over parameterised queries."
 
