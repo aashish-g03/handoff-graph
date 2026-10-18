@@ -28,7 +28,10 @@ Measured on two held-out periods of real microsoft/vscode issues (summer n = 1,1
 - **Top-3 suggestions:** the agent's top three contain the eventual owner 81% / 69% of the time, vs 77% / 62% for the classifier's single pick. That's useful when a human triager picks from suggestions.
 - **Bounce-risk flag:** when the agent asks for a human, the classifier's pick is wrong 36% / 47% of the time, vs 23% / 38% overall.
 
-**Live MCP server:** `https://handoff-graph-mcp-production.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`)
+**Try it in the browser:** https://handoff-graph-mcp-production.up.railway.app/ (live routing on real VS Code issues, the memory explorer, and the recorded replay).
+**Live MCP server:** `https://handoff-graph-mcp-production.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`; writes are disabled on the public server).
+
+<sub>The live demo runs FalkorDB on Railway with a persistent volume, reachable only over Railway's private network. We moved off the FalkorDB Cloud Free tier because free instances stop after a day idle and wouldn't survive judging.</sub>
 
 Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) (WeMakeDevs × FalkorDB).
 **Track: Agent Memory and Coordination** (also relevant to Agents That Act on Connected Data).
