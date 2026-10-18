@@ -28,6 +28,7 @@ Measured on two held-out periods of real microsoft/vscode issues (summer n = 1,1
 - **Top-3 suggestions:** the agent's top three contain the eventual owner 81% / 69% of the time, vs 77% / 62% for the classifier's single pick. That's useful when a human triager picks from suggestions.
 - **Bounce-risk flag:** when the agent asks for a human, the classifier's pick is wrong 36% / 47% of the time, vs 23% / 38% overall.
 
+**Write-up:** [Same AI, with and without memory](https://dev.to/aashish_g/same-ai-with-and-without-memory-a-falkordb-graph-took-issue-routing-from-18-to-74-3812) (dev.to).
 **Try it in the browser:** https://handoff-graph.up.railway.app/ (live routing on real VS Code issues, the memory explorer, and the recorded replay).
 **Live MCP server:** `https://handoff-graph.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`; writes are disabled on the public server).
 
