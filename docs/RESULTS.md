@@ -57,7 +57,7 @@ File: `results/replay_20261015T210435Z.json`.
 - The DEV gain (+3.8 points at 8%) did not transfer to an unseen period.
 
 What replicated across both holdouts:
-- Without graph memory, Jev must escalate 58–66% of issues; with it, 5–7%.
+- Without graph memory, Jev must escalate 58–66% of issues; with it, 4–7%.
 - The graph's candidate set contains the right owner more often than the bot's single pick (73–84% vs 62–77%).
 
 Spring is harder: the bot's first pick was right only 62% of the time, and 37% of bot-routed issues were handed off.

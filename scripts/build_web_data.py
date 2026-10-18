@@ -77,6 +77,14 @@ for i in sorted(parsed, key=lambda i: -i.routing_time):
 FIRST = [341421, 341277, 341245]
 ex.sort(key=lambda e: FIRST.index(e["number"]) if e["number"] in FIRST else len(FIRST))
 out["examples"] = ex
+
+# Recorded real responses for every example, so the page isn't empty before the first click.
+# Produced by the same route_issue the live API uses (local graph with the same data as the deployment).
+from datetime import datetime, timezone
+from handoff_graph.mcp_server import route_issue
+day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+out["samples"] = {str(e["number"]): {"recorded_at": day, "response": route_issue(e["title"], e["body"], e["proposed"])}
+                  for e in ex}
 dest = ROOT / "src/handoff_graph/web/data.json"
 json.dump(out, dest.open("w"), indent=1)
 print("wrote", dest, "examples", [(e["number"], e["proposed"]) for e in ex])

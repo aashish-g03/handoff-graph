@@ -57,7 +57,7 @@ Optional, if there's time: ask *"Who does pwang347 usually hand issues to?"* to 
 
 ### Numbers used on camera, all from docs/RESULTS.md
 - 1,678 handed-off issues (16.1% of assigned); 79.3% started with the bot's pick. Source: `events.derive_handoffs` over the full Jun 1 – Oct 15 pull.
-- Summer held-out escalation: no graph 66.5%; with graph 3.7%.
+- Summer held-out escalation: no graph 66.5% (rounds to 66%); with graph 3.7%.
 - Spring held-out escalation: no graph 64.5%; with graph 6.6%.
 - Right first time: summer 74.3% vs bot 76.9%; spring 58.5% vs bot 62.1%.
 - Memory-alternative hit rate on bounced issues: 38% (DEV) vs 13% (summer HOLDOUT).

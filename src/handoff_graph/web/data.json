@@ -537,5 +537,358 @@
    "body": "<!-- \u26a0\ufe0f\u26a0\ufe0f Do Not Delete This! bug_report_template \u26a0\ufe0f\u26a0\ufe0f -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- \ud83d\udd6e Read our guide about submitting issues: https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions -->\n<!-- \ud83d\udd0e Search existing issues to avoid creating duplicates. -->\n<!-- \ud83e\uddea Test using the latest Insiders build to see if your issue has already been fixed: https://code.visualstudio.com/insiders/ -->\n<!-- \ud83d\udca1 Instead of creating your report here, use 'Report Issue' from the 'Help' menu in VS Code to pre-fill useful information. -->\n<!-- \ud83d\udd27 Launch with `code --disable-extensions` to check. -->\nDoes this issue occur when all exten",
    "proposed": "lramos15"
   }
- ]
+ ],
+ "samples": {
+  "341421": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "connor4312",
+    "escalate": false,
+    "reason": "@connor4312 leads by 0.79",
+    "margin": 0.79,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "connor4312",
+      "probability": 0.854,
+      "path": "bot routes to @aeschli -> @aeschli handed 5/151 so far to @connor4312 (e.g. #326363, #336416, #337944)"
+     },
+     {
+      "login": "pwang347",
+      "probability": 0.064,
+      "path": "bot routes to @aeschli -> @aeschli handed 4/151 so far to @pwang347 (e.g. #334438, #320484, #329543)"
+     },
+     {
+      "login": "mrleemurray",
+      "probability": 0.056,
+      "path": "bot routes to @aeschli -> @aeschli handed 4/151 so far to @mrleemurray (e.g. #330911, #328964, #326445)"
+     },
+     {
+      "login": "aeschli",
+      "probability": 0.026,
+      "path": "bot routes to @aeschli; kept 124/151 so far"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.0,
+      "path": "bot routes to @aeschli -> @aeschli handed 11/151 so far to @hediet (e.g. #339795, #329743, #320304)"
+     }
+    ],
+    "jev_calls": 2
+   }
+  },
+  "341277": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": null,
+    "escalate": true,
+    "reason": "too close to call (margin 0.49 < 0.50); ask a human",
+    "margin": 0.485,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "aeschli",
+      "probability": 0.63,
+      "path": "bot routes to @pwang347 -> @pwang347 handed 42/159 so far to @aeschli (e.g. #328464, #320484, #341057)"
+     },
+     {
+      "login": "connor4312",
+      "probability": 0.145,
+      "path": "bot routes to @pwang347 -> @pwang347 handed 18/159 so far to @connor4312 (e.g. #330809, #334055, #324611)"
+     },
+     {
+      "login": "houghj16",
+      "probability": 0.082,
+      "path": "bot routes to @pwang347 -> @pwang347 handed 8/159 so far to @houghj16 (e.g. #341052, #338770, #339902)"
+     },
+     {
+      "login": "vritant24",
+      "probability": 0.074,
+      "path": "bot routes to @pwang347 -> @pwang347 handed 8/159 so far to @vritant24 (e.g. #327424, #327404, #339720)"
+     },
+     {
+      "login": "pwang347",
+      "probability": 0.07,
+      "path": "bot routes to @pwang347; kept 77/159 so far"
+     }
+    ],
+    "jev_calls": 2
+   }
+  },
+  "341245": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "benibenj",
+    "escalate": false,
+    "reason": "@benibenj leads by 0.97",
+    "margin": 0.969,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "benibenj",
+      "probability": 0.978,
+      "path": "bot routes to @benibenj; kept 238/405 so far"
+     },
+     {
+      "login": "mrleemurray",
+      "probability": 0.009,
+      "path": "bot routes to @benibenj -> @benibenj handed 64/405 so far to @mrleemurray (e.g. #332798, #327730, #331146)"
+     },
+     {
+      "login": "hawkticehurst",
+      "probability": 0.009,
+      "path": "bot routes to @benibenj -> @benibenj handed 75/405 so far to @hawkticehurst (e.g. #340365, #332106, #338171)"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.003,
+      "path": "bot routes to @benibenj -> @benibenj handed 10/405 so far to @hediet (e.g. #332236, #332765, #322691)"
+     },
+     {
+      "login": "sandy081",
+      "probability": 0.002,
+      "path": "bot routes to @benibenj -> @benibenj handed 11/405 so far to @sandy081 (e.g. #321321, #319298, #319519)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  },
+  "341423": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "roblourens",
+    "escalate": false,
+    "reason": "@roblourens leads by 0.70",
+    "margin": 0.7,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "roblourens",
+      "probability": 0.774,
+      "path": "bot routes to @roblourens; kept 610/701 so far"
+     },
+     {
+      "login": "connor4312",
+      "probability": 0.075,
+      "path": "bot routes to @roblourens -> @roblourens handed 26/701 so far to @connor4312 (e.g. #331289, #321729, #339276)"
+     },
+     {
+      "login": "TylerLeonhardt",
+      "probability": 0.069,
+      "path": "bot routes to @roblourens -> @roblourens handed 20/701 so far to @TylerLeonhardt (e.g. #319423, #326630, #320080)"
+     },
+     {
+      "login": "bhavyaus",
+      "probability": 0.041,
+      "path": "bot routes to @roblourens -> @roblourens handed 18/701 so far to @bhavyaus (e.g. #319433, #319331, #325446)"
+     },
+     {
+      "login": "aeschli",
+      "probability": 0.041,
+      "path": "bot routes to @roblourens -> @roblourens handed 16/701 so far to @aeschli (e.g. #328430, #322356, #328033)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  },
+  "341416": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "meganrogge",
+    "escalate": false,
+    "reason": "@meganrogge leads by 1.00",
+    "margin": 0.997,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "meganrogge",
+      "probability": 0.998,
+      "path": "bot routes to @meganrogge; kept 310/357 so far"
+     },
+     {
+      "login": "anthonykim1",
+      "probability": 0.001,
+      "path": "bot routes to @meganrogge -> @meganrogge handed 12/357 so far to @anthonykim1 (e.g. #334343, #319261, #321159)"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.001,
+      "path": "bot routes to @meganrogge -> @meganrogge handed 16/357 so far to @hediet (e.g. #333111, #328057, #330954)"
+     },
+     {
+      "login": "mrleemurray",
+      "probability": 0.0,
+      "path": "bot routes to @meganrogge -> @meganrogge handed 6/357 so far to @mrleemurray (e.g. #321431, #321135, #340292)"
+     },
+     {
+      "login": "aiday-mar",
+      "probability": 0.0,
+      "path": "bot routes to @meganrogge -> @meganrogge handed 8/357 so far to @aiday-mar (e.g. #329556, #323492, #328191)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  },
+  "341399": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "lramos15",
+    "escalate": false,
+    "reason": "@lramos15 leads by 0.99",
+    "margin": 0.99,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "lramos15",
+      "probability": 0.994,
+      "path": "bot routes to @lramos15; kept 310/367 so far"
+     },
+     {
+      "login": "vritant24",
+      "probability": 0.003,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 30/367 so far to @vritant24 (e.g. #319886, #338242, #320339)"
+     },
+     {
+      "login": "TylerLeonhardt",
+      "probability": 0.002,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 7/367 so far to @TylerLeonhardt (e.g. #321388, #334469, #324786)"
+     },
+     {
+      "login": "roblourens",
+      "probability": 0.001,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 5/367 so far to @roblourens (e.g. #339398, #334760, #323574)"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.001,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 10/367 so far to @hediet (e.g. #337703, #337949, #337989)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  },
+  "341402": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": null,
+    "escalate": true,
+    "reason": "too close to call (margin 0.21 < 0.50); ask a human",
+    "margin": 0.215,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "connor4312",
+      "probability": 0.445,
+      "path": "bot routes to @sandy081 -> @sandy081 handed 35/371 so far to @connor4312 (e.g. #320093, #323809, #333106)"
+     },
+     {
+      "login": "sandy081",
+      "probability": 0.23,
+      "path": "bot routes to @sandy081; kept 303/371 so far"
+     },
+     {
+      "login": "aeschli",
+      "probability": 0.149,
+      "path": "bot routes to @sandy081 -> @sandy081 handed 9/371 so far to @aeschli (e.g. #334857, #319919, #327194)"
+     },
+     {
+      "login": "dmitrivMS",
+      "probability": 0.112,
+      "path": "bot routes to @sandy081 -> @sandy081 handed 8/371 so far to @dmitrivMS (e.g. #336995, #320216, #320167)"
+     },
+     {
+      "login": "roblourens",
+      "probability": 0.064,
+      "path": "bot routes to @sandy081 -> @sandy081 handed 8/371 so far to @roblourens (e.g. #334291, #334440, #332768)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  },
+  "341396": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": null,
+    "escalate": true,
+    "reason": "too close to call (margin 0.43 < 0.50); ask a human",
+    "margin": 0.428,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "connor4312",
+      "probability": 0.63,
+      "path": "bot routes to @aeschli -> @aeschli handed 5/151 so far to @connor4312 (e.g. #326363, #336416, #337944)"
+     },
+     {
+      "login": "aeschli",
+      "probability": 0.202,
+      "path": "bot routes to @aeschli; kept 124/151 so far"
+     },
+     {
+      "login": "pwang347",
+      "probability": 0.075,
+      "path": "bot routes to @aeschli -> @aeschli handed 4/151 so far to @pwang347 (e.g. #334438, #320484, #329543)"
+     },
+     {
+      "login": "mrleemurray",
+      "probability": 0.06,
+      "path": "bot routes to @aeschli -> @aeschli handed 4/151 so far to @mrleemurray (e.g. #330911, #328964, #326445)"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.033,
+      "path": "bot routes to @aeschli -> @aeschli handed 11/151 so far to @hediet (e.g. #339795, #329743, #320304)"
+     }
+    ],
+    "jev_calls": 2
+   }
+  },
+  "341389": {
+   "recorded_at": "2026-10-18",
+   "response": {
+    "owner": "lramos15",
+    "escalate": false,
+    "reason": "@lramos15 leads by 0.96",
+    "margin": 0.964,
+    "gate": 0.5,
+    "memory_trusted": true,
+    "candidates": [
+     {
+      "login": "lramos15",
+      "probability": 0.978,
+      "path": "bot routes to @lramos15; kept 310/367 so far"
+     },
+     {
+      "login": "vritant24",
+      "probability": 0.015,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 30/367 so far to @vritant24 (e.g. #319886, #338242, #320339)"
+     },
+     {
+      "login": "TylerLeonhardt",
+      "probability": 0.004,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 7/367 so far to @TylerLeonhardt (e.g. #321388, #334469, #324786)"
+     },
+     {
+      "login": "roblourens",
+      "probability": 0.002,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 5/367 so far to @roblourens (e.g. #339398, #334760, #323574)"
+     },
+     {
+      "login": "hediet",
+      "probability": 0.001,
+      "path": "bot routes to @lramos15 -> @lramos15 handed 10/367 so far to @hediet (e.g. #337703, #337949, #337989)"
+     }
+    ],
+    "jev_calls": 1
+   }
+  }
+ }
 }

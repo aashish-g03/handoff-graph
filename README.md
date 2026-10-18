@@ -12,8 +12,8 @@ Measured on two held-out periods of real microsoft/vscode issues (summer n = 1,1
 
 | The same AI decision model (TypeSafe Jev) and the same decision code | Has to ask a human | Right owner, first try |
 |---|---|---|
-| **Without graph memory** | 67% / 65% | 18% / 15% |
-| **With FalkorDB graph memory** | **4% / 7%** | **74% / 59%** |
+| **Without graph memory** | 66% / 64% | 18% / 15% |
+| **With FalkorDB graph memory** | **4% / 7%** | **74% / 58%** |
 | *For scale: VS Code's dedicated triage classifier¹* | *0%* | *77% / 62%* |
 
 <sub>Each cell shows summer / spring. ¹VS Code triages new issues with an automatic classification bot (`classifier-deep`). It has per-category confidence thresholds and a hand-maintained feature-area ownership file (`.github/classifier.json`), and team members fix its mistakes by hand ([VS Code wiki](https://github.com/Microsoft/vscode/wiki/Issue-Tracking)).</sub>

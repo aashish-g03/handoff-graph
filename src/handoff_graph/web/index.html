@@ -120,7 +120,7 @@ h3 { font-size: var(--text-md); letter-spacing: -0.01em; line-height: 1.3; }
 .picker-foot { padding: var(--space-xs) var(--space-sm); border-top: 1px solid var(--color-rule); display: flex; justify-content: space-between; align-items: center; gap: var(--space-xs); }
 .picker-foot .hint { font-size: var(--text-xs); color: var(--color-muted); }
 
-.console { background: var(--color-graphite); color: var(--color-on-graphite); border: 1px solid var(--color-graphite-rule); border-radius: var(--radius-card); box-shadow: 0 1px 2px var(--color-shadow); overflow: hidden; min-width: 0; }
+.console { position: sticky; top: 84px; background: var(--color-graphite); color: var(--color-on-graphite); border: 1px solid var(--color-graphite-rule); border-radius: var(--radius-card); box-shadow: 0 1px 2px var(--color-shadow); overflow: hidden; min-width: 0; }
 .console-head { display: flex; justify-content: space-between; align-items: center; padding: 10px var(--space-sm); border-bottom: 1px solid var(--color-graphite-rule); font: 400 var(--text-xs)/1 var(--font-mono); color: var(--color-on-graphite-2); gap: var(--space-xs); }
 .console-head .method { color: var(--color-signal-on-dark); font-weight: 500; }
 .status { font: 500 var(--text-xs)/1 var(--font-mono); letter-spacing: var(--tracking-label); padding: 4px 7px; border-radius: 4px; border: 1px solid var(--color-graphite-rule); white-space: nowrap; color: var(--color-on-graphite); }
@@ -152,6 +152,7 @@ h3 { font-size: var(--text-md); letter-spacing: -0.01em; line-height: 1.3; }
 .meter { height: 6px; border-radius: 3px; background: var(--color-graphite-2); overflow: hidden; }
 .meter i { display: block; height: 100%; background: var(--color-signal-on-dark); }
 .res .foot { font: 400 var(--text-xs)/1.5 var(--font-mono); color: var(--color-on-graphite-2); border-top: 1px solid var(--color-graphite-rule); padding-top: var(--space-xs); }
+.recorded { font: 400 var(--text-xs)/1.5 var(--font-mono); color: var(--color-on-graphite-2); margin: 0; }
 .err { color: var(--color-wrong-dark); font-size: var(--text-sm); margin: 0; }
 
 /* Sections */
@@ -166,10 +167,15 @@ section.block { padding: var(--space-3xl) 0; border-top: 1px solid var(--color-r
 .fig { padding: var(--space-lg); min-width: 0; }
 .fig + .fig { border-left: 1px solid var(--color-graphite-rule); }
 .fig .label { color: var(--color-on-graphite-2); }
-.fig-big { display: flex; align-items: baseline; gap: var(--space-xs) var(--space-sm); margin: var(--space-sm) 0 var(--space-lg); flex-wrap: wrap; }
-.fig-big b { font: 500 var(--text-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--color-on-graphite); }
-.fig-big .arrow { color: var(--color-signal-on-dark); font: 500 var(--text-lg)/1 var(--font-mono); }
-.fig-big span.cap { flex-basis: 100%; font-size: var(--text-sm); color: var(--color-on-graphite-2); }
+.fig-q { font: 500 var(--text-md)/1.35 var(--font-display); color: var(--color-on-graphite); margin: var(--space-sm) 0 var(--space-md); letter-spacing: -0.01em; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--space-sm); align-items: end; margin-bottom: var(--space-lg); }
+.pair .side { display: grid; gap: var(--space-2xs); min-width: 0; }
+.pair .tag { font: 500 var(--text-xs)/1.3 var(--font-mono); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-on-graphite-2); }
+.pair .side--with .tag { color: var(--color-signal-on-dark); }
+.pair b { font: 500 var(--text-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--color-on-graphite); }
+.pair .side--without b { color: var(--color-on-graphite-2); }
+.pair .sub { font-size: var(--text-xs); color: var(--color-on-graphite-2); }
+.pair .arrow { color: var(--color-signal-on-dark); font: 500 var(--text-xl)/1 var(--font-mono); padding-bottom: 1.6rem; }
 .rows { display: grid; gap: var(--space-xs); }
 .row { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 3.4rem; gap: var(--space-xs); align-items: center; font-size: var(--text-sm); }
 .row .v { text-align: right; font: 500 var(--text-sm)/1 var(--font-mono); color: var(--color-on-graphite); font-variant-numeric: tabular-nums; }
@@ -231,6 +237,7 @@ footer .mark { font-size: var(--text-sm); }
 
 @media (max-width: 900px) {
   .hero-grid, .sec-head, .explore { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
+  .console { position: static; }
   .figures, .limits { grid-template-columns: minmax(0, 1fr); }
   .fig + .fig { border-left: 0; border-top: 1px solid var(--color-graphite-rule); }
   .limits div + div { border-left: 0; border-top: 1px solid var(--color-rule); }
@@ -243,6 +250,8 @@ footer .mark { font-size: var(--text-sm); }
   .row { grid-template-columns: 7rem minmax(0, 1fr) 3rem; }
   .cand { grid-template-columns: 6.5rem minmax(0, 1fr) 2.6rem; }
   .fig { padding: var(--space-md); }
+  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pair .arrow { display: none; }
   section.block, .band { padding: var(--space-2xl) 0; }
   .picker-foot { flex-wrap: wrap; }
 }
@@ -349,7 +358,7 @@ footer .mark { font-size: var(--text-sm); }
         <p>Stated plainly, because the numbers are only useful with the limits next to them.</p>
       </div>
       <div class="limits reveal">
-        <div><h3>It doesn't beat the classifier on a first guess</h3><p>74% vs 77% in summer, 59% vs 62% in spring. Even perfect knowledge of which issues get forwarded tops out near 85%: most handoffs depend on workload and absences you can't see when an issue arrives.</p></div>
+        <div><h3>It doesn't beat the classifier on a first guess</h3><p>74% vs 77% in summer, 58% vs 62% in spring. Even perfect knowledge of which issues get forwarded tops out near 85%: most handoffs depend on workload and absences you can't see when an issue arrives.</p></div>
         <div><h3>Memory about people goes stale</h3><p>The memory's best alternative named the eventual owner of 38% of bounced issues in July and August, and 13% a month later. So it keeps learning from every new handoff.</p></div>
         <div><h3>It needs reassignments to learn from</h3><p>All evidence comes from one repository. VS Code reassigns 16% of issues. Next.js, PyTorch and Rust reassign 0–1%, so there would be little to learn there.</p></div>
       </div>
@@ -387,7 +396,7 @@ function renderIssues() {
       <span class="t">${esc(e.title)}</span>
       <span class="m">#${e.number}  bot → @${esc(e.proposed)}</span>
     </button></li>`).join("");
-  $("#issues").querySelectorAll("button").forEach((b) => b.onclick = () => { chosen = +b.dataset.i; renderIssues(); renderReq(); });
+  $("#issues").querySelectorAll("button").forEach((b) => b.onclick = () => { chosen = +b.dataset.i; renderIssues(); renderReq(); showSampleOrIdle(); });
 }
 function payload() {
   if (mode === "real") { const e = data.examples[chosen]; return e && { title: e.title, body: e.body, proposed_assignee: e.proposed }; }
@@ -396,8 +405,9 @@ function payload() {
 function renderReq() {
   const p = payload();
   if (!p) { $("#req").textContent = ""; return; }
-  const body = (p.body || "").replace(/\s+/g, " ").slice(0, 90);
-  $("#req").innerHTML = `{\n  <span class="k">"title"</span>: <span class="s">"${esc(p.title)}"</span>,\n  <span class="k">"body"</span>: <span class="s">"${esc(body)}${(p.body || "").length > 90 ? "…" : ""}"</span>,\n  <span class="k">"proposed_assignee"</span>: <span class="s">"${esc(p.proposed_assignee)}"</span>\n}`;
+  const clean = (p.body || "").replace(/<[^>]*>/g, " ").replace(/[#*`>_|-]{1,}/g, " ").replace(/\s+/g, " ").trim();
+  const body = clean.slice(0, 90);
+  $("#req").innerHTML = `{\n  <span class="k">"title"</span>: <span class="s">"${esc(p.title)}"</span>,\n  <span class="k">"body"</span>: <span class="s">"${esc(body)}${clean.length > 90 ? "…" : ""}"</span>,\n  <span class="k">"proposed_assignee"</span>: <span class="s">"${esc(p.proposed_assignee)}"</span>\n}`;
 }
 function setMode(m) {
   mode = m;
@@ -406,8 +416,8 @@ function setMode(m) {
   $("#inbox-title").textContent = m === "real" ? "Recent VS Code issues" : "Your issue";
   renderReq();
 }
-$("#tab-real").onclick = () => setMode("real");
-$("#tab-own").onclick = () => setMode("own");
+$("#tab-real").onclick = () => { setMode("real"); showSampleOrIdle(); };
+$("#tab-own").onclick = () => { setMode("own"); showSampleOrIdle(); };
 ["#own-title", "#own-body", "#own-who"].forEach((s) => $(s).addEventListener("input", renderReq));
 
 function parsePath(path) {
@@ -417,9 +427,19 @@ function parsePath(path) {
   if (k) return { kind: "kept", from: k[1], times: +k[2], of: +k[3] };
   return null;
 }
+function showSampleOrIdle() {
+  const e = data.examples[chosen];
+  const rec = mode === "real" && e && data.samples?.[String(e.number)];
+  if (rec) {
+    renderVerdict(rec.response, e.proposed, `Recorded answer from ${rec.recorded_at}. Press Route this issue to run it live.`);
+  } else {
+    setStatus("ready", "");
+    $("#verdict").innerHTML = `<p class="idle">Press Route this issue. The graph narrows the candidates from handoff memory, then Jev scores each one against the issue text.</p>`;
+  }
+}
 function setStatus(text, cls) { const s = $("#status"); s.textContent = text; s.className = "status" + (cls ? " " + cls : ""); }
 
-function renderVerdict(res, proposed) {
+function renderVerdict(res, proposed, recorded) {
   if (res.error) { setStatus("error", "status--ask"); $("#verdict").innerHTML = `<p class="err">${esc(res.error)}</p>`; return; }
   const top = res.candidates?.[0];
   let call, cls, dest;
@@ -447,6 +467,7 @@ function renderVerdict(res, proposed) {
       <span class="ev">${desc}${links ? `, for example ${links}` : ""}</span></li>`;
   }).join("");
   $("#verdict").innerHTML = `
+    ${recorded ? `<p class="recorded">${recorded}</p>` : ""}
     <div class="call">${call}</div>
     <p class="why">${esc(res.reason)}${res.memory_trusted === false ? ". Too little handoff memory for this person, so the bot's pick stands." : ""}</p>
     ${chain}
@@ -470,9 +491,14 @@ $("#go").onclick = async () => {
 function renderCompare() {
   const fig = (name, v, when) => `
     <div class="fig">
-      <span class="label">${name}, ${v.n.toLocaleString()} held-out issues, ${when}</span>
-      <div class="fig-big"><b>${pct(v.no_memory.escalated)}</b><span class="arrow">→</span><b>${pct(v.memory.escalated)}</b><span class="cap">of issues handed to a human, without memory and then with it</span></div>
-      <div class="row-title">Right owner on the first try</div>
+      <span class="label">${name}: ${v.n.toLocaleString()} unseen real issues</span>
+      <p class="fig-q">How often the AI gives up and hands the issue to a human</p>
+      <div class="pair">
+        <div class="side side--without"><span class="tag">Without graph memory</span><b>${pct(v.no_memory.escalated)}</b><span class="sub">of issues</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="side side--with"><span class="tag">With graph memory</span><b>${pct(v.memory.escalated)}</b><span class="sub">of issues</span></div>
+      </div>
+      <div class="row-title">How often it picks the right owner first time</div>
       <div class="rows">
         <div class="row row--nomem"><span>Without memory</span><span class="meter"><i style="width:${v.no_memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.no_memory.top1_accuracy)}</span></div>
         <div class="row"><span>With memory</span><span class="meter"><i style="width:${v.memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.memory.top1_accuracy)}</span></div>
@@ -550,7 +576,7 @@ if (!reduce && "IntersectionObserver" in window) {
 
 (async () => {
   data = await (await fetch("/api/data")).json();
-  chosen = 0; renderIssues(); renderReq(); renderCompare(); renderReplay(); loadPeople();
+  chosen = 0; renderIssues(); renderReq(); showSampleOrIdle(); renderCompare(); renderReplay(); loadPeople();
 })();
 </script>
 </body>
