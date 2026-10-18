@@ -199,6 +199,11 @@ We replay real triage in time order: every issue is routed at the moment VS Code
 
 ## Run it
 
+**Without any setup:** `uv run python -m handoff_graph.demo results/replay_20261015T203103Z.json` replays the recorded held-out decisions.
+
+**Reproduce the held-out tables without a Jev key:** fetch the public issue data (below), ingest it, then run the replay with `--offline`. It uses the committed Jev answer cache in `data/cache/jev.jsonl`.
+
+
 ```bash
 docker run -d --name hg-falkordb -p 6380:6379 -p 3001:3000 falkordb/falkordb:latest
 cp .env.example .env   # add TYPESAFE_API_KEY
