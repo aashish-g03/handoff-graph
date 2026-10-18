@@ -61,3 +61,17 @@ What replicated across both holdouts:
 - The graph's candidate set contains the right owner more often than the bot's single pick (73–84% vs 62–77%).
 
 Spring is harder: the bot's first pick was right only 62% of the time, and 37% of bot-routed issues were handed off.
+
+# Added after both holdouts (descriptive, not pre-registered)
+Computed from the recorded holdout rows. Nothing was re-run.
+- **Same-issue precision.** On the issues the agent routes, it is right 77.2% vs the bot's 77.4% (summer), and 62.6% vs 62.8% (spring). That's a tie. The agent's higher pooled precision comes from which issues it escalates.
+- **Top-k coverage.** The agent's top-1/2/3 candidates contain the final owner:
+  - summer: 76.9% / 79.8% / 81.1%, vs the bot's single pick 76.9%;
+  - spring: 61.8% / 65.9% / 68.5%, vs 62.1%.
+- **Bounce-risk flag.** On issues the agent escalates, the bot's pick is wrong 35.7% (summer, n = 42) and 46.8% (spring, n = 203), vs 23.1% and 37.9% overall.
+- **Ceiling (DEV).** Perfect knowledge of which issues get forwarded, routing each to the pick's most common 60-day target, would reach 85.1% vs the bot's 77.8%.
+- **Signals tested on DEV for that gap:**
+  - issue text: AUC 0.57;
+  - 60-day forward rate: AUC 0.74, best override +0.6 points;
+  - issue author: the bot wins 66 to 19;
+  - three-in-a-row forward streak: bot right 3/12, under 1% of issues.

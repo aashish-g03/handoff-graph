@@ -4,5 +4,8 @@ data/raw/
 __pycache__/
 *.pyc
 .pytest_cache/
-data/cache/
-results/
+data/cache/*
+!data/cache/jev.jsonl
+results/*
+!results/replay_20261015T203103Z.json
+!results/replay_20261015T210435Z.json

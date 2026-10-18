@@ -47,10 +47,9 @@ Pause on the final summary block. Point at **asks a human: 66.5% → 3.7%**.
 
 Optional, if there's time: ask *"Who does pwang347 usually hand issues to?"* to show `handoff_history`.
 
-## Shot 5: The honest part (2:05–2:30)
-**Screen:** README "Results", both tables.
-> "Does it beat VS Code's own bot? No. On first-time accuracy it's slightly behind, on two separate held-out periods. Our attempt to beat it on precision worked on development data and failed on unseen data, and we report that. We also found that handoff memory goes stale within weeks: the alternative that named 38% of owners in July–August named 13% a month later.
-> So the result is this: an agent's memory of people is what makes it usable at all, and it has to keep learning. Handoff Graph does both, with the reasoning shown for every decision."
+## Shot 5: The result, honestly (2:05–2:30)
+**Screen:** the README "The result" table.
+> "So here's the result. The same AI, with and without memory. Without the graph it has to hand two-thirds of issues to a human. With FalkorDB memory, about one in twenty. When it does route, it's as accurate as Microsoft's dedicated triage classifier on the same issues, and within a few points of it on the first guess, with no training and no per-repo model. It doesn't beat that classifier on a single first guess, and we tested why: what decides most handoffs isn't visible when an issue arrives. And memory about people goes stale within weeks, so it has to keep learning. Handoff Graph does, and it shows its reasoning every time."
 
 **End card:** repo URL, MCP URL, "Built with FalkorDB + TypeSafe Jev · Graph Hacks 2026".
 

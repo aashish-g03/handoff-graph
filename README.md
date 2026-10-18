@@ -4,21 +4,31 @@
 
 Every time an issue is passed on ("not me, ask @y"), a *learner* agent records the handoff in a FalkorDB graph. A *router* agent reads that memory, asks a decision model (TypeSafe Jev) one narrow question per candidate, and then does one of three things: routes the issue, keeps the current owner, or asks a human. Every decision comes with the graph path that justifies it.
 
-**Live MCP server:** `https://handoff-graph-mcp-production.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`)
+### The result
 
-### What we found, measured on two held-out periods of real microsoft/vscode issues
+> **Without graph memory, the same AI has to hand about two-thirds of issues to a human. With it, about one in twenty. When it does route, it's as accurate as Microsoft's dedicated triage classifier on the same issues, and it's within 2–4 points of that classifier on first-try accuracy. It needs no training and no per-repo model, and it shows the graph path for every decision.**
 
-| | Without graph memory | With graph memory |
+Measured on two held-out periods of real microsoft/vscode issues (summer n = 1,133; spring n = 3,064), each run once with a frozen design:
+
+| The same AI decision model (TypeSafe Jev) and the same decision code | Has to ask a human | Right owner, first try |
 |---|---|---|
-| Issues the agent must hand to a human | **58–67%** | **4–7%** |
-| Right owner among the agent's candidates | 71–82% | **73–84%** (vs 62–77% for the bot's single pick) |
-| Explanation for each decision | none | the graph path, e.g. *"@benibenj handed 75 of 405 such issues to @hawkticehurst (#325171, …)"* |
+| **Without graph memory** | 67% / 65% | 18% / 15% |
+| **With FalkorDB graph memory** | **4% / 7%** | **74% / 59%** |
+| *For scale: VS Code's dedicated triage classifier¹* | *0%* | *77% / 62%* |
 
-1. **Memory is what makes the agent usable.** The same decision model and decision code goes from escalating about two-thirds of issues to roughly one in twenty. That held on both held-out periods (summer n = 1,133; spring n = 3,064).
-2. **It does not beat VS Code's own triage bot** on getting the owner right first time (summer 74.3% vs 76.9%; spring 58.5% vs 62.1%).
-   - Our attempt to beat it on precision (a pre-registered +2 points) worked on development data (+3.8) and failed on unseen data (+0.5).
-   - Most handoffs depend on things the issue text doesn't show: workload, vacations, team roles.
-3. **Handoff memory goes stale within weeks.** The memory's best alternative named the eventual owner of 38% of bounced issues in July–August, but 13% in late August–September. Agent memory about people has to keep learning; a model trained once won't stay right.
+<sub>Each cell shows summer / spring. ¹VS Code triages new issues with an automatic classification bot (`classifier-deep`). It has per-category confidence thresholds and a hand-maintained feature-area ownership file (`.github/classifier.json`), and team members fix its mistakes by hand ([VS Code wiki](https://github.com/Microsoft/vscode/wiki/Issue-Tracking)).</sub>
+
+- **It does not beat Microsoft's classifier on a single first guess.**
+  - On the issues our agent routes, both are right about equally often (summer 77.2% vs 77.4%; spring 62.6% vs 62.8%).
+  - A pre-registered attempt to beat it (+2 points of precision) worked on development data and failed on unseen data.
+  - Even perfect knowledge of which issues get forwarded would only reach about 85%. Handoffs depend on workload and absences that aren't visible when an issue arrives.
+- **Handoff memory goes stale within weeks.** The memory's best alternative named the eventual owner of 38% of bounced issues in July–August, but only 13% a month later. Memory about people has to keep learning.
+
+**Identified after the results** (descriptive; these metrics weren't pre-registered):
+- **Top-3 suggestions:** the agent's top three contain the eventual owner 81% / 69% of the time, vs 77% / 62% for the classifier's single pick. That's useful when a human triager picks from suggestions.
+- **Bounce-risk flag:** when the agent asks for a human, the classifier's pick is wrong 36% / 47% of the time, vs 23% / 38% overall.
+
+**Live MCP server:** `https://handoff-graph-mcp-production.up.railway.app/mcp` (tools: `route_issue`, `handoff_history`, `record_handoff`)
 
 Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) (WeMakeDevs × FalkorDB).
 **Track: Agent Memory and Coordination** (also relevant to Agents That Act on Connected Data).
@@ -60,6 +70,7 @@ All numbers come from a time-ordered replay of real triage, where each issue is 
 - **Pre-registered win condition** for v2 (precision ≥ bot + 2 points at ≤ 15% escalation): **not met**.
 - **Cost:** about one Jev call per issue, median latency about 0.4 s, and under $0.0001 per routed issue.
 - **The deployed MCP server runs the v1 design** (the summer table).
+- **Precision when routed, on the same issues:** the agent is right 77.2% vs the classifier's 77.4% (summer), and 62.6% vs 62.8% (spring). That's a tie. The small edge in the tables above comes from *which* issues get escalated, not from better routing.
 
 **Why it can't beat the bot on first-try accuracy.** We checked the ceiling on development data. Even perfect knowledge of *which* issues get forwarded, sending each to the pick's most common recent handoff target, would reach about 85% vs the bot's 78%. That 7-point gap isn't visible in the issue at routing time. We tested four signals:
 - issue text: AUC 0.57;
