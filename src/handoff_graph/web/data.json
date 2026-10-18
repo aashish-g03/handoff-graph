@@ -484,10 +484,10 @@
  ],
  "examples": [
   {
-   "number": 341245,
-   "title": "API: let extensions open an editor in a new floating window, with size, compact and always-on-top",
-   "body": "## Summary\n\nExtensions can move an editor into a new window with\n`workbench.action.moveEditorToNewWindow`, but cannot choose the window's size,\ncannot make it compact or always-on-top at creation, and cannot open an editor\ndirectly into a new window. The workbench supports all of this internally:\n`_workbench.openWith(resource, editorId, [AUX_WINDOW_GROUP, { auxiliary: { bounds, compact, alwaysOnTop } }])`\ndoes exactly that today. The public `vscode.openWith` cannot reach it.\n\n## Use case\n\n[porthole](https://github.com/jlumbroso/porthole), an extension that pops an HTML page into a small, compact, pinned\nwindow beside your code. It calls the internal command above because nothing\npublic does ",
-   "proposed": "benibenj"
+   "number": 341421,
+   "title": "WSL Webview resources return 401 due to remoteAuthority casing mismatch (wsl+Ubuntu vs wsl+ubuntu)",
+   "body": "### Environment\n\n- VS Code: 1.141.1\n- Commit: 7baac39ec3ca969dab74ac12c097f6a486e46593\n- Windows desktop client connected to WSL Ubuntu\n- Remote - WSL extension: 0.104.3\n- Affected extension: OpenAI Codex (`openai.chatgpt`)\n- Codex versions tested in WSL: 26.1007.21434 and 26.930.31730\n\n### Description\n\nThe Codex Webview fails to load when I open VS Code from an Ubuntu terminal using `code .`.\n\nThis workflow worked before October 13, 2026. Local updater logs show that VS Code completed an update on that day. I suspect an update regression, although I have not tested the previous VS Code version.\n\nBoth Codex versions listed above exhibit the failure.\n\n### Steps to reproduce\n\n1. Use Windows VS",
+   "proposed": "aeschli"
   },
   {
    "number": 341277,
@@ -496,16 +496,16 @@
    "proposed": "pwang347"
   },
   {
+   "number": 341245,
+   "title": "API: let extensions open an editor in a new floating window, with size, compact and always-on-top",
+   "body": "## Summary\n\nExtensions can move an editor into a new window with\n`workbench.action.moveEditorToNewWindow`, but cannot choose the window's size,\ncannot make it compact or always-on-top at creation, and cannot open an editor\ndirectly into a new window. The workbench supports all of this internally:\n`_workbench.openWith(resource, editorId, [AUX_WINDOW_GROUP, { auxiliary: { bounds, compact, alwaysOnTop } }])`\ndoes exactly that today. The public `vscode.openWith` cannot reach it.\n\n## Use case\n\n[porthole](https://github.com/jlumbroso/porthole), an extension that pops an HTML page into a small, compact, pinned\nwindow beside your code. It calls the internal command above because nothing\npublic does ",
+   "proposed": "benibenj"
+  },
+  {
    "number": 341423,
    "title": "Claude code extension window does not render!",
    "body": "\nType: <b>Bug</b>\n\nLoad VS Code, click the Claude Code extension, the window is blank\n\nVS Code version: Code 1.141.1 (7baac39ec3ca969dab74ac12c097f6a486e46593, 2026-10-12T12:00:06-07:00)\nOS version: Windows_NT x64 10.0.26300\nModes:\nRemote OS version: Linux x64 6.6.87.2-microsoft-standard-WSL2\n\n<details>\n<summary>System Info</summary>\n\n|Item|Value|\n|---|---|\n|CPUs|Intel(R) Core(TM) Ultra 7 265F (20 x 2381)|\n|GPU Status|2d_canvas: enabled<br>GPU0: VENDOR= 0x10de, DEVICE=0x2d04 [NVIDIA GeForce RTX 5060 Ti], DRIVER_VENDOR=NVIDIA, DRIVER_VERSION=32.0.16.1060 *ACTIVE*<br>GPU1: VENDOR= 0x1414, DEVICE=0x008c [Microsoft Basic Render Driver], DRIVER_VERSION=10.0.26100.9278<br>Machine model name: <br>M",
    "proposed": "roblourens"
-  },
-  {
-   "number": 341421,
-   "title": "WSL Webview resources return 401 due to remoteAuthority casing mismatch (wsl+Ubuntu vs wsl+ubuntu)",
-   "body": "### Environment\n\n- VS Code: 1.141.1\n- Commit: 7baac39ec3ca969dab74ac12c097f6a486e46593\n- Windows desktop client connected to WSL Ubuntu\n- Remote - WSL extension: 0.104.3\n- Affected extension: OpenAI Codex (`openai.chatgpt`)\n- Codex versions tested in WSL: 26.1007.21434 and 26.930.31730\n\n### Description\n\nThe Codex Webview fails to load when I open VS Code from an Ubuntu terminal using `code .`.\n\nThis workflow worked before October 13, 2026. Local updater logs show that VS Code completed an update on that day. I suspect an update regression, although I have not tested the previous VS Code version.\n\nBoth Codex versions listed above exhibit the failure.\n\n### Steps to reproduce\n\n1. Use Windows VS",
-   "proposed": "aeschli"
   },
   {
    "number": 341416,

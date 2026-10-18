@@ -72,6 +72,10 @@ for i in sorted(parsed, key=lambda i: -i.routing_time):
                        "proposed": i.first_pick.login})
     if len(ex) >= 9:
         break
+# Order so the first three clicks show each behaviour (checked live on 2026-10-18):
+# 341421 routes to a learned alternative, 341277 asks a human, 341245 keeps the bot's pick.
+FIRST = [341421, 341277, 341245]
+ex.sort(key=lambda e: FIRST.index(e["number"]) if e["number"] in FIRST else len(FIRST))
 out["examples"] = ex
 dest = ROOT / "src/handoff_graph/web/data.json"
 json.dump(out, dest.open("w"), indent=1)

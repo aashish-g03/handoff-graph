@@ -276,9 +276,7 @@ function renderVerdict(res, proposed) {
     </div>`;
   } else if (p && p.kind === "kept") {
     chain = `<div class="path" aria-label="Handoff path">
-      <span class="node bot">@${esc(proposed)}<small>triage bot's pick</small></span>
-      <span class="edge">kept ${p.times} of ${p.of}<br>issues it was given</span>
-      <span class="node dest">@${esc(proposed)}<small>stays with them</small></span>
+      <span class="node dest">@${esc(proposed)}<small>triage bot's pick; kept ${p.times} of the ${p.of} issues it was given</small></span>
     </div>`;
   }
   const cands = (res.candidates || []).map((c) => {
