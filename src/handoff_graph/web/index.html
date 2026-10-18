@@ -176,6 +176,10 @@ section.block { padding: var(--space-3xl) 0; border-top: 1px solid var(--color-r
 .pair b { font: 500 var(--text-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--color-on-graphite); }
 .pair .side--without b { color: var(--color-on-graphite-2); }
 .pair .sub { font-size: var(--text-xs); color: var(--color-on-graphite-2); }
+.pair--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 0; }
+.pair .side--scale b { color: var(--color-on-graphite-2); }
+.pair .side--scale .tag { color: var(--color-on-graphite-2); }
+.pair .side--scale b { text-decoration: underline dashed var(--color-graphite-rule); text-underline-offset: 8px; text-decoration-thickness: 1px; }
 .rows { display: grid; gap: var(--space-xs); }
 .row { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 3.4rem; gap: var(--space-xs); align-items: center; font-size: var(--text-sm); }
 .row .v { text-align: right; font: 500 var(--text-sm)/1 var(--font-mono); color: var(--color-on-graphite); font-variant-numeric: tabular-nums; }
@@ -251,6 +255,9 @@ footer .mark { font-size: var(--text-sm); }
   .cand { grid-template-columns: 6.5rem minmax(0, 1fr) 2.6rem; }
   .fig { padding: var(--space-md); }
   .pair .side + .side { padding-left: var(--space-sm); }
+  .pair--3 b { font-size: var(--text-2xl); }
+  .pair--3 .side + .side { padding-left: var(--space-xs); }
+  .pair--3 .tag, .pair--3 .sub { font-size: 0.6875rem; }
   section.block, .band { padding: var(--space-2xl) 0; }
   .picker-foot { flex-wrap: wrap; }
 }
@@ -496,11 +503,11 @@ function renderCompare() {
         <div class="side side--without"><span class="tag">Without graph memory</span><b>${pct(v.no_memory.escalated)}</b><span class="sub">of issues</span></div>
         <div class="side side--with"><span class="tag">With graph memory</span><b>${pct(v.memory.escalated)}</b><span class="sub">of issues</span></div>
       </div>
-      <div class="row-title">How often it picks the right owner first time</div>
-      <div class="rows">
-        <div class="row row--nomem"><span>Without memory</span><span class="meter"><i style="width:${v.no_memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.no_memory.top1_accuracy)}</span></div>
-        <div class="row"><span>With memory</span><span class="meter"><i style="width:${v.memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.memory.top1_accuracy)}</span></div>
-        <div class="row row--cls"><span>VS Code classifier</span><span class="meter"><i style="width:${v.bot.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.bot.top1_accuracy)}</span></div>
+      <p class="fig-q">How often it picks the right owner on the first try</p>
+      <div class="pair pair--3">
+        <div class="side side--without"><span class="tag">Without graph memory</span><b>${pct(v.no_memory.top1_accuracy)}</b><span class="sub">right first time</span></div>
+        <div class="side side--with"><span class="tag">With graph memory</span><b>${pct(v.memory.top1_accuracy)}</b><span class="sub">right first time</span></div>
+        <div class="side side--scale"><span class="tag">VS Code classifier</span><b>${pct(v.bot.top1_accuracy)}</b><span class="sub">for scale; purpose-built</span></div>
       </div>
     </div>`;
   $("#compare").innerHTML = fig("Summer 2026", data.result.summer, "Aug 25 to Sep 15") + fig("Spring 2026", data.result.spring, "Apr 1 to May 15");
