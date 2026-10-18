@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.frame{width:1000px;height:520px;padding:36px 40px;background:var(--paper)}
+h2{font-size:24px;margin:6px 0 22px}
+.grid{display:grid;grid-template-columns:200px 34px 230px 34px 200px 34px 170px;align-items:center}
+.box{border:1px solid var(--rule-2);border-radius:10px;background:#fff;padding:14px 16px}
+.box h3{font-size:15.5px;margin-bottom:4px}
+.box p{font-size:12px;color:var(--muted);line-height:1.4}
+.box .label{display:block;margin-bottom:6px}
+.db{background:var(--graphite);border-color:var(--graphite-rule);color:var(--on-g-2)}
+.db h3{color:var(--on-g)} .db p{color:var(--on-g-2)} .db .label{color:var(--signal)}
+.edge{font:500 11px/1.3 "JetBrains Mono";color:var(--signal);background:var(--graphite-2);border:1px solid var(--graphite-rule);border-radius:6px;padding:7px 8px;margin-top:10px}
+.arr{height:2px;background:var(--accent);position:relative;margin:0 4px}
+.arr::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:7px solid var(--accent)}
+.out{display:grid;gap:8px}
+.o{border-radius:8px;padding:8px 10px;font-size:12.5px;border:1px solid var(--rule-2);background:#fff}
+.o b{display:block;font:500 13.5px "Space Grotesk";color:var(--ink)}
+.o.route{border-color:var(--accent);background:var(--accent-soft)}
+.o.ask{border-color:var(--ask)}
+.row2{display:grid;grid-template-columns:200px 34px 230px 34px 200px;margin-top:22px;align-items:start}
+.note{font-size:12px;color:var(--muted);line-height:1.45}
+.note b{color:var(--ink-2);font-weight:600}
+.tools{grid-column:3 / span 3;border:1px dashed var(--rule-2);border-radius:10px;padding:12px 14px;font-size:12px;background:var(--paper-2)}
+.tools code{font:500 11.5px "JetBrains Mono";color:var(--ink)}
+.up{grid-column:3;text-align:center;font:500 11px "JetBrains Mono";color:var(--muted);margin-top:4px}
+</style></head><body><div class="frame">
+<span class="label">How Handoff Graph works</span>
+<h2>Two agents share one FalkorDB graph</h2>
+<div class="grid">
+  <div class="box"><span class="label">Learner agent</span><h3>Records every handoff</h3><p>GitHub assign / unassign events. The only component that writes.</p></div>
+  <div class="arr"></div>
+  <div class="box db"><span class="label">FalkorDB graph</span><h3>Handoff memory</h3><p>One graph per repo. Issue, Person, Area nodes; timestamped assignments and labels.</p>
+    <div class="edge">(:Person)-[:HANDED_OFF {issue, at, kind}]-&gt;(:Person)</div></div>
+  <div class="arr"></div>
+  <div class="box"><span class="label">Router agent</span><h3>Reads memory as of time t</h3><p><b style='color:var(--ink-2);font-weight:600'>Read-only.</b></p><p>Every query filters <span class="mono">h.at &lt; $t</span>. Builds 5 candidates and a prior, plus the path for each.</p></div>
+  <div class="arr"></div>
+  <div class="out">
+    <div class="o route"><b>Route</b>to a learned alternative</div>
+    <div class="o ask"><b>Ask a human</b>too close to call</div>
+    <div class="o"><b>Keep</b>the bot's pick</div>
+  </div>
+</div>
+<div class="row2">
+  <div class="note"><b>Jev only judges.</b> For each candidate the graph chose, TypeSafe Jev answers one yes/no question: does this issue look like what this person kept, or what they passed on? The decision rule is fixed in code.</div>
+  <div></div>
+  <div class="tools">Exposed as a live MCP server and a web page: <code>route_issue</code>, <code>handoff_history</code> and <code>record_handoff</code> (writes off in public). The model never writes Cypher.</div>
+</div>
+</div></body></html>

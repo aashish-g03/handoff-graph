@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+:root{
+  --paper:#F7F8FA; --paper-2:#EEF1F5; --rule:#DDE2EA; --rule-2:#C5CCD8; --muted:#667085; --ink-2:#344054; --ink:#1B2230;
+  --accent:#2F5FE0; --accent-soft:#E4EBFC; --graphite:#1C2230; --graphite-2:#262D3D; --graphite-rule:#38415A;
+  --on-g:#E8EBF2; --on-g-2:#A9B1C3; --signal:#7EA2FF; --ask:#C98A1B; --ask-dark:#F0C36B; --gray:#8B93A3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);color:var(--ink-2);font:400 16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.frame{zoom:2;overflow:hidden}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;color:var(--ink);font-weight:500;letter-spacing:-.025em}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.label{font:500 11px/1.3 "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
