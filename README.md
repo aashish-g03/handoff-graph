@@ -235,7 +235,7 @@ Handoff Graph differs from these in four ways:
 
 ## AI assistance disclosure
 
-This project was built with Claude Code (Anthropic) as a coding assistant. The author reviewed the design, data model, evaluation protocol and results, and is responsible for them.
+This project was built with Claude Code (Anthropic) as a coding assistant. The demo video's narration is an AI voice generated with ElevenLabs (Eleven v4). The author reviewed the design, data model, evaluation protocol and results, and is responsible for them.
 
 ## Data and licences
 
