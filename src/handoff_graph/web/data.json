@@ -1,0 +1,541 @@
+{
+ "result": {
+  "summer": {
+   "n": 1133,
+   "no_memory": {
+    "top1_accuracy": 0.1845,
+    "escalated": 0.6646,
+    "precision_when_routed": 0.55
+   },
+   "memory": {
+    "top1_accuracy": 0.7432,
+    "escalated": 0.0371,
+    "precision_when_routed": 0.7718
+   },
+   "bot": {
+    "top1_accuracy": 0.7688,
+    "escalated": 0.0,
+    "precision_when_routed": 0.7688
+   }
+  },
+  "spring": {
+   "n": 3064,
+   "no_memory": {
+    "top1_accuracy": 0.1498,
+    "escalated": 0.6446,
+    "precision_when_routed": 0.4215
+   },
+   "memory": {
+    "top1_accuracy": 0.5849,
+    "escalated": 0.0663,
+    "precision_when_routed": 0.6264
+   },
+   "bot": {
+    "top1_accuracy": 0.6214,
+    "escalated": 0.0,
+    "precision_when_routed": 0.6214
+   }
+  }
+ },
+ "replay": [
+  {
+   "number": 332459,
+   "title": "File tree shifts to the right after invoking rename",
+   "bot_pick": "lramos15",
+   "owner": [
+    "lramos15"
+   ],
+   "bot": "lramos15",
+   "no_memory": null,
+   "memory": "lramos15"
+  },
+  {
+   "number": 332546,
+   "title": "PLEASE BACK TO LAST DESIGNER",
+   "bot_pick": "hawkticehurst",
+   "owner": [
+    "hawkticehurst"
+   ],
+   "bot": "hawkticehurst",
+   "no_memory": null,
+   "memory": "hawkticehurst"
+  },
+  {
+   "number": 332644,
+   "title": "Click Menu Bar immediately kills the latest VSC Preview Edition",
+   "bot_pick": "benibenj",
+   "owner": [
+    "benibenj"
+   ],
+   "bot": "benibenj",
+   "no_memory": "benibenj",
+   "memory": "benibenj"
+  },
+  {
+   "number": 332721,
+   "title": "TernarySearchTree.has reports true for strict prefixes of stored keys",
+   "bot_pick": "ulugbekna",
+   "owner": [
+    "ulugbekna"
+   ],
+   "bot": "ulugbekna",
+   "no_memory": "ulugbekna",
+   "memory": "ulugbekna"
+  },
+  {
+   "number": 332797,
+   "title": "Custom editor (e.g. Markdown preview) missing bottom border",
+   "bot_pick": "lramos15",
+   "owner": [
+    "lramos15"
+   ],
+   "bot": "lramos15",
+   "no_memory": "benibenj",
+   "memory": "lramos15"
+  },
+  {
+   "number": 332880,
+   "title": "no see the folding (icon)  on XML file",
+   "bot_pick": "aeschli",
+   "owner": [
+    "aeschli"
+   ],
+   "bot": "aeschli",
+   "no_memory": null,
+   "memory": "aeschli"
+  },
+  {
+   "number": 332934,
+   "title": "Copilot Chat agent todo list never completes after the task is finished",
+   "bot_pick": "bhavyaus",
+   "owner": [
+    "bhavyaus"
+   ],
+   "bot": "bhavyaus",
+   "no_memory": null,
+   "memory": "bhavyaus"
+  },
+  {
+   "number": 333054,
+   "title": "Diff Editor: Setting to Change Overview Ruler Size",
+   "bot_pick": "hediet",
+   "owner": [
+    "hediet"
+   ],
+   "bot": "hediet",
+   "no_memory": null,
+   "memory": "hediet"
+  },
+  {
+   "number": 333173,
+   "title": "renderWhitespace: the dot of a space is painted at its pre-widget column when an inline 'after' decoration sits immediately before it",
+   "bot_pick": "hediet",
+   "owner": [
+    "hediet"
+   ],
+   "bot": "hediet",
+   "no_memory": null,
+   "memory": "hediet"
+  },
+  {
+   "number": 333270,
+   "title": "Dispatch can't find my desktop \u2014 bridge authenticates but never issues a device_id",
+   "bot_pick": "hediet",
+   "owner": [
+    "hediet"
+   ],
+   "bot": "hediet",
+   "no_memory": null,
+   "memory": "hediet"
+  },
+  {
+   "number": 333346,
+   "title": "Add plus button to add file on the fly",
+   "bot_pick": "TylerLeonhardt",
+   "owner": [
+    "TylerLeonhardt"
+   ],
+   "bot": "TylerLeonhardt",
+   "no_memory": "benibenj",
+   "memory": "TylerLeonhardt"
+  },
+  {
+   "number": 333407,
+   "title": "vscode.dev: Markdown Editor doesn't render & Markdown Preview renders very slowly",
+   "bot_pick": "meganrogge",
+   "owner": [
+    "hediet"
+   ],
+   "bot": "meganrogge",
+   "no_memory": null,
+   "memory": "meganrogge"
+  },
+  {
+   "number": 333468,
+   "title": "Chat history is missing from the VS Code UI although local chat session files still exist",
+   "bot_pick": "roblourens",
+   "owner": [
+    "roblourens"
+   ],
+   "bot": "roblourens",
+   "no_memory": "roblourens",
+   "memory": "roblourens"
+  },
+  {
+   "number": 333613,
+   "title": "Support `~/.copilot/mcp-config.json` in the Local Harness",
+   "bot_pick": "sandy081",
+   "owner": [
+    "vritant24"
+   ],
+   "bot": "sandy081",
+   "no_memory": null,
+   "memory": null
+  },
+  {
+   "number": 333731,
+   "title": "[Weird design, Very Werid!!] This button is unclear, which leads to misunderstanding of whether I am archive or del. And they can absolutely be the independent buttons.",
+   "bot_pick": "osortega",
+   "owner": [
+    "osortega"
+   ],
+   "bot": "osortega",
+   "no_memory": null,
+   "memory": "osortega"
+  },
+  {
+   "number": 333867,
+   "title": "Rethink agent response rendering with custom backgrounds",
+   "bot_pick": "justschen",
+   "owner": [
+    "justschen"
+   ],
+   "bot": "justschen",
+   "no_memory": null,
+   "memory": "justschen"
+  },
+  {
+   "number": 333978,
+   "title": "Chat / Agents: Git ignored files cannot be referenced in the chat or agents",
+   "bot_pick": "benibenj",
+   "owner": [
+    "roblourens",
+    "justschen"
+   ],
+   "bot": "benibenj",
+   "no_memory": null,
+   "memory": "benibenj"
+  },
+  {
+   "number": 334106,
+   "title": "the hamburger menu button is broken",
+   "bot_pick": "benibenj",
+   "owner": [
+    "benibenj"
+   ],
+   "bot": "benibenj",
+   "no_memory": "benibenj",
+   "memory": "hawkticehurst"
+  },
+  {
+   "number": 334195,
+   "title": "Top-Right Menu Unresponsive After VS Code Update",
+   "bot_pick": "justschen",
+   "owner": [
+    "justschen",
+    "mrleemurray"
+   ],
+   "bot": "justschen",
+   "no_memory": null,
+   "memory": "justschen"
+  },
+  {
+   "number": 334257,
+   "title": "feature",
+   "bot_pick": "bhavyaus",
+   "owner": [
+    "bhavyaus"
+   ],
+   "bot": "bhavyaus",
+   "no_memory": null,
+   "memory": "bhavyaus"
+  },
+  {
+   "number": 334399,
+   "title": "Hello",
+   "bot_pick": "pwang347",
+   "owner": [
+    "pwang347"
+   ],
+   "bot": "pwang347",
+   "no_memory": null,
+   "memory": "pwang347"
+  },
+  {
+   "number": 334443,
+   "title": "I am intrested",
+   "bot_pick": "vritant24",
+   "owner": [
+    "vritant24"
+   ],
+   "bot": "vritant24",
+   "no_memory": null,
+   "memory": "vritant24"
+  },
+  {
+   "number": 334525,
+   "title": "Black screen",
+   "bot_pick": "dileepyavan",
+   "owner": [
+    "deepak1556"
+   ],
+   "bot": "dileepyavan",
+   "no_memory": null,
+   "memory": "dileepyavan"
+  },
+  {
+   "number": 334653,
+   "title": "Refactor extension proposals check to use Array.prototype.includes",
+   "bot_pick": "dbaeumer",
+   "owner": [
+    "sandy081"
+   ],
+   "bot": "dbaeumer",
+   "no_memory": "sandy081",
+   "memory": "dbaeumer"
+  },
+  {
+   "number": 334728,
+   "title": "chat.useCustomizationsInParentRepositories does not discover customizations through Git worktree .git files",
+   "bot_pick": "lszomoru",
+   "owner": [
+    "aeschli"
+   ],
+   "bot": "lszomoru",
+   "no_memory": null,
+   "memory": "lszomoru"
+  },
+  {
+   "number": 334786,
+   "title": "Scrollbar slider thumb becomes nearly invisible at the bottom edge of webview editor tabs in Light Mode (macOS)",
+   "bot_pick": "joshspicer",
+   "owner": [
+    "mrleemurray"
+   ],
+   "bot": "joshspicer",
+   "no_memory": null,
+   "memory": "joshspicer"
+  },
+  {
+   "number": 334850,
+   "title": "VS Code doesn't handle KDE remap of Ctrl, Caps Lock properly",
+   "bot_pick": "ulugbekna",
+   "owner": [
+    "ulugbekna"
+   ],
+   "bot": "ulugbekna",
+   "no_memory": "ulugbekna",
+   "memory": "ulugbekna"
+  },
+  {
+   "number": 334936,
+   "title": "error",
+   "bot_pick": "ulugbekna",
+   "owner": [
+    "ulugbekna"
+   ],
+   "bot": "ulugbekna",
+   "no_memory": null,
+   "memory": "ulugbekna"
+  },
+  {
+   "number": 335021,
+   "title": "Thinking effort is not showing like before",
+   "bot_pick": "benibenj",
+   "owner": [
+    "lramos15"
+   ],
+   "bot": "benibenj",
+   "no_memory": null,
+   "memory": "benibenj"
+  },
+  {
+   "number": 335145,
+   "title": "Editor highlights individual letters instead of semantic symbols",
+   "bot_pick": "sandy081",
+   "owner": [
+    "sandy081"
+   ],
+   "bot": "sandy081",
+   "no_memory": null,
+   "memory": "sandy081"
+  },
+  {
+   "number": 335226,
+   "title": "Agent harness always receives current file context",
+   "bot_pick": "amunger",
+   "owner": [
+    "Giuspepe"
+   ],
+   "bot": "amunger",
+   "no_memory": null,
+   "memory": "amunger"
+  },
+  {
+   "number": 335310,
+   "title": "https://insiders.vscode.dev",
+   "bot_pick": "sandy081",
+   "owner": [
+    "sandy081"
+   ],
+   "bot": "sandy081",
+   "no_memory": null,
+   "memory": "sandy081"
+  },
+  {
+   "number": 335412,
+   "title": "Vs code crashes and is unresponsive on launch",
+   "bot_pick": "vijayupadya",
+   "owner": [
+    "vijayupadya"
+   ],
+   "bot": "vijayupadya",
+   "no_memory": null,
+   "memory": "vijayupadya"
+  },
+  {
+   "number": 335534,
+   "title": "vs closing time to time ",
+   "bot_pick": "kycutler",
+   "owner": [
+    "kycutler"
+   ],
+   "bot": "kycutler",
+   "no_memory": "kycutler",
+   "memory": "kycutler"
+  },
+  {
+   "number": 335663,
+   "title": "Markdown: escaped `\\$` opens an inline math span and hides highlighting until the next `$`",
+   "bot_pick": "pwang347",
+   "owner": [
+    "hediet"
+   ],
+   "bot": "pwang347",
+   "no_memory": null,
+   "memory": "pwang347"
+  },
+  {
+   "number": 335790,
+   "title": "The \u2728 **Generate Commit Message** action is not available when a workspace is backed by a virtual file system",
+   "bot_pick": "lszomoru",
+   "owner": [
+    "lszomoru"
+   ],
+   "bot": "lszomoru",
+   "no_memory": null,
+   "memory": "lszomoru"
+  },
+  {
+   "number": 335929,
+   "title": "Setting `permissions.ask` breaks all auto-allow settings in all GitHub Copilot Harnesses",
+   "bot_pick": "TylerLeonhardt",
+   "owner": [
+    "TylerLeonhardt",
+    "rwoll"
+   ],
+   "bot": "TylerLeonhardt",
+   "no_memory": null,
+   "memory": "TylerLeonhardt"
+  },
+  {
+   "number": 335986,
+   "title": "VS Code's terminal audio/accessibility signals are intrusive, confusing, and absurdly difficult to disable",
+   "bot_pick": "vijayupadya",
+   "owner": [
+    "vijayupadya"
+   ],
+   "bot": "vijayupadya",
+   "no_memory": "meganrogge",
+   "memory": "vijayupadya"
+  },
+  {
+   "number": 336056,
+   "title": "Allow MCP tools to register one-shot wake events for the current agent chat",
+   "bot_pick": "chrmarti",
+   "owner": [
+    "chrmarti"
+   ],
+   "bot": "chrmarti",
+   "no_memory": null,
+   "memory": "chrmarti"
+  },
+  {
+   "number": 336116,
+   "title": "\u529f\u80fd\u8bf7\u6c42",
+   "bot_pick": "DonJayamanne",
+   "owner": [
+    "DonJayamanne"
+   ],
+   "bot": "DonJayamanne",
+   "no_memory": "DonJayamanne",
+   "memory": "DonJayamanne"
+  }
+ ],
+ "examples": [
+  {
+   "number": 341245,
+   "title": "API: let extensions open an editor in a new floating window, with size, compact and always-on-top",
+   "body": "## Summary\n\nExtensions can move an editor into a new window with\n`workbench.action.moveEditorToNewWindow`, but cannot choose the window's size,\ncannot make it compact or always-on-top at creation, and cannot open an editor\ndirectly into a new window. The workbench supports all of this internally:\n`_workbench.openWith(resource, editorId, [AUX_WINDOW_GROUP, { auxiliary: { bounds, compact, alwaysOnTop } }])`\ndoes exactly that today. The public `vscode.openWith` cannot reach it.\n\n## Use case\n\n[porthole](https://github.com/jlumbroso/porthole), an extension that pops an HTML page into a small, compact, pinned\nwindow beside your code. It calls the internal command above because nothing\npublic does ",
+   "proposed": "benibenj"
+  },
+  {
+   "number": 341277,
+   "title": "built-in a skill to audit insturcttions and skills",
+   "body": "\nType: <b>Feature Request</b>\n\nWhen i create or edit an instruction or a skill, i ad not sure they were correct, short and efficient, so i hope copilot chat has a built-in skill to make sure the quality.\n\nVS Code version: Code 1.141.0 (2a59476c9bfcb90b3ddc372c36762471b7dfad1c, 2026-10-06T10:15:52+02:00)\nOS version: Windows_NT x64 10.0.26300\nModes:\n\n<details>\n<summary>System Info</summary>\n\n|Item|Value|\n|---|---|\n|CPUs|Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz (12 x 2904)|\n|GPU Status|2d_canvas: enabled<br>GPU0: VENDOR= 0x8086, DEVICE=0x9bc8 [Intel(R) UHD Graphics 630], DRIVER_VENDOR=Intel, DRIVER_VERSION=31.0.101.2115 *ACTIVE*<br>GPU1: VENDOR= 0x1414, DEVICE=0x008c [Microsoft Basic Render Dri",
+   "proposed": "pwang347"
+  },
+  {
+   "number": 341423,
+   "title": "Claude code extension window does not render!",
+   "body": "\nType: <b>Bug</b>\n\nLoad VS Code, click the Claude Code extension, the window is blank\n\nVS Code version: Code 1.141.1 (7baac39ec3ca969dab74ac12c097f6a486e46593, 2026-10-12T12:00:06-07:00)\nOS version: Windows_NT x64 10.0.26300\nModes:\nRemote OS version: Linux x64 6.6.87.2-microsoft-standard-WSL2\n\n<details>\n<summary>System Info</summary>\n\n|Item|Value|\n|---|---|\n|CPUs|Intel(R) Core(TM) Ultra 7 265F (20 x 2381)|\n|GPU Status|2d_canvas: enabled<br>GPU0: VENDOR= 0x10de, DEVICE=0x2d04 [NVIDIA GeForce RTX 5060 Ti], DRIVER_VENDOR=NVIDIA, DRIVER_VERSION=32.0.16.1060 *ACTIVE*<br>GPU1: VENDOR= 0x1414, DEVICE=0x008c [Microsoft Basic Render Driver], DRIVER_VERSION=10.0.26100.9278<br>Machine model name: <br>M",
+   "proposed": "roblourens"
+  },
+  {
+   "number": 341421,
+   "title": "WSL Webview resources return 401 due to remoteAuthority casing mismatch (wsl+Ubuntu vs wsl+ubuntu)",
+   "body": "### Environment\n\n- VS Code: 1.141.1\n- Commit: 7baac39ec3ca969dab74ac12c097f6a486e46593\n- Windows desktop client connected to WSL Ubuntu\n- Remote - WSL extension: 0.104.3\n- Affected extension: OpenAI Codex (`openai.chatgpt`)\n- Codex versions tested in WSL: 26.1007.21434 and 26.930.31730\n\n### Description\n\nThe Codex Webview fails to load when I open VS Code from an Ubuntu terminal using `code .`.\n\nThis workflow worked before October 13, 2026. Local updater logs show that VS Code completed an update on that day. I suspect an update regression, although I have not tested the previous VS Code version.\n\nBoth Codex versions listed above exhibit the failure.\n\n### Steps to reproduce\n\n1. Use Windows VS",
+   "proposed": "aeschli"
+  },
+  {
+   "number": 341416,
+   "title": "tasks.json: Add \"group\": \"run\" option for task, like the existing \"build\" and \"test\"",
+   "body": "<!-- \u26a0\ufe0f\u26a0\ufe0f Do Not Delete This! feature_request_template \u26a0\ufe0f\u26a0\ufe0f -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- Please search existing issues to avoid creating duplicates. -->\n\n<!-- Describe the feature you'd like. -->\n\n## Problem\n\nThe most common development loop `edit / build / run` is only partially modeled in `tasks.json`: build and test have a role, run does not.\n\nBuild and test can be declared as: `\"group\": { \"kind\": \"build\" | \"test\", \"isDefault\": true }`, and come with dedicated commands:\n\n- `Tasks: Configure Default Build Task`\n- `Tasks: Run Build Task`\n- `Tasks: Configure Default Test Task`\n- `Tasks: Run Test Task`\n\nRunning the program",
+   "proposed": "meganrogge"
+  },
+  {
+   "number": 341399,
+   "title": "agent-host (Copilot Chat) pegs CPU at 150-190% indefinitely due to a busy-loop in SQLite-backed session/chronicle indexing",
+   "body": "\nType: <b>Performance Issue</b>\n\n**Environment**\n\nVS Code version: 1.141.1\nOS: macOS 15.7.9 (Build 24G830), arm64\nExtension: GitHub Copilot Chat (bundled, Contents/Resources/app/extensions/copilot)\nFeature involved: local chat session history indexing (\"chronicle\" / session_store_sql tool), backed by session-store.db (SQLite) in ~/Library/Application Support/Code/User/globalStorage/github.copilot-chat/\nSummary\nThe agent-host process sustains 150-190% CPU continuously and indefinitely \u2014 even on a fresh VS Code launch with no active chat session, and with a very small session-store dataset (65 sessions, 346 turns).\n\n**Steps to reproduce**\n\n1. Use Copilot Chat agent sessions normally for a whil",
+   "proposed": "lramos15"
+  },
+  {
+   "number": 341402,
+   "title": "Route Copilot MCP Gallery installs through Agent Host",
+   "body": "<!-- \u26a0\ufe0f\u26a0\ufe0f Do Not Delete This! feature_request_template \u26a0\ufe0f\u26a0\ufe0f -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- Please search existing issues to avoid creating duplicates. -->\n\nWhen Chat Customizations Browse is scoped to Copilot, installing an MCP Gallery entry should be owned by Copilot through Agent Host rather than written through VS Code MCP management.\n\nThe provider-owned flow should:\n\n- preserve the validated MCP registry card URL as installation provenance\n- route planning, policy evaluation, confirmation, apply, inventory, recovery, and uninstall through Agent Host and the Copilot SDK\n- retain VS Code MCP management for harnesses witho",
+   "proposed": "sandy081"
+  },
+  {
+   "number": 341396,
+   "title": "Remote webview resources denied (401) when WSL distro name has uppercase letters",
+   "body": "### Does this issue occur when all extensions are disabled?\n\nNot tested \u2014 webviews from multiple unrelated extensions are affected (Atlassian `atlassian.atlascode` and `GitHub.vscode-pull-request-github`), which points at core webview resource loading.\n\n- VS Code Version: 1.141.1 (commit `7baac39ec3ca969dab74ac12c097f6a486e46593`), Electron 43.7.7, Chromium 150.0.7871.250\n- OS Version: Windows (client) + WSL distro named `Ubuntu-26.04` (remote)\n\n### Summary\n\nWhen connected to a WSL distro whose name contains uppercase letters (`Ubuntu-26.04`), every extension webview stays blank. Their local scripts fail to load with `401 Unauthorized (from service worker)`. The same extensions render correc",
+   "proposed": "aeschli"
+  },
+  {
+   "number": 341389,
+   "title": "Copilot unable to fetch models in 1.141.1",
+   "body": "<!-- \u26a0\ufe0f\u26a0\ufe0f Do Not Delete This! bug_report_template \u26a0\ufe0f\u26a0\ufe0f -->\n<!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->\n<!-- \ud83d\udd6e Read our guide about submitting issues: https://github.com/microsoft/vscode/wiki/Submitting-Bugs-and-Suggestions -->\n<!-- \ud83d\udd0e Search existing issues to avoid creating duplicates. -->\n<!-- \ud83e\uddea Test using the latest Insiders build to see if your issue has already been fixed: https://code.visualstudio.com/insiders/ -->\n<!-- \ud83d\udca1 Instead of creating your report here, use 'Report Issue' from the 'Help' menu in VS Code to pre-fill useful information. -->\n<!-- \ud83d\udd27 Launch with `code --disable-extensions` to check. -->\nDoes this issue occur when all exten",
+   "proposed": "lramos15"
+  }
+ ]
+}

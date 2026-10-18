@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff Graph</title>
+<meta name="description" content="Issue routing that remembers who hands what to whom. FalkorDB graph memory + TypeSafe Jev, measured on real VS Code triage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F2F4F7; --sheet: #FFFFFF; --ink: #1B2230; --muted: #5B6577; --line: #D9DEE6;
+  --route: #2B59D9; --route-soft: #E3EAFB; --ask: #B7791F; --ask-soft: #FBF0DC;
+  --right: #2F855A; --wrong: #B83A2A;
+  --display: "Bricolage Grotesque", system-ui, sans-serif; --text: "Public Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161F; --sheet: #1A2030; --ink: #E7EBF2; --muted: #9AA4B6; --line: #2C3446;
+    --route: #7C9BF2; --route-soft: #22305A; --ask: #E0A74A; --ask-soft: #3A2E17; --right: #5DBB8A; --wrong: #E5765F;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161F; --sheet: #1A2030; --ink: #E7EBF2; --muted: #9AA4B6; --line: #2C3446;
+  --route: #7C9BF2; --route-soft: #22305A; --ask: #E0A74A; --ask-soft: #3A2E17; --right: #5DBB8A; --wrong: #E5765F;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--text); }
+a { color: var(--route); }
+:focus-visible { outline: 3px solid var(--route); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 16px; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; gap: 16px; flex-wrap: wrap; }
+.mark { font: 700 21px/1 var(--display); letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+.mark svg { flex: none; }
+nav.links { display: flex; gap: 18px; font-size: 15px; flex-wrap: wrap; }
+h1 { font: 700 clamp(32px, 4.4vw, 50px)/1.05 var(--display); letter-spacing: -0.025em; margin: 18px 0 14px; max-width: 22ch; }
+h2 { font: 700 30px/1.15 var(--display); letter-spacing: -0.015em; margin: 0 0 10px; }
+h3 { font: 600 17px/1.3 var(--text); margin: 0 0 6px; }
+.lede { font-size: 18px; max-width: 64ch; color: var(--muted); margin: 0 0 24px; }
+.lede strong { color: var(--ink); font-weight: 600; }
+section { padding: 56px 0; border-top: 1px solid var(--line); }
+section.hero { border-top: 0; padding-top: 0; }
+.prose { max-width: 66ch; color: var(--muted); }
+
+/* Live demo */
+.desk { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 0; background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.inbox { border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+.inbox-head { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.inbox-head h3 { margin: 0; }
+.tabs button { font: 600 14px var(--text); background: none; border: 0; color: var(--muted); padding: 6px 8px; cursor: pointer; border-radius: 6px; }
+.tabs button[aria-pressed="true"] { color: var(--ink); background: var(--paper); }
+.issues { list-style: none; margin: 0; padding: 0; max-height: 430px; overflow: auto; }
+.issues li button { all: unset; display: block; width: 100%; box-sizing: border-box; padding: 12px 18px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.issues li button:hover { background: var(--paper); }
+.issues li button[aria-current="true"] { background: var(--route-soft); }
+.issues .t { display: block; font-weight: 600; line-height: 1.35; }
+.issues .m { display: block; font-size: 14px; color: var(--muted); margin-top: 3px; }
+.own { padding: 18px; display: grid; gap: 12px; }
+.own[hidden], .issues[hidden] { display: none; }
+.own label { font-size: 14px; color: var(--muted); display: grid; gap: 5px; }
+.own input, .own textarea, .own select, select.pick { font: 16px var(--text); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; }
+.own textarea { min-height: 120px; resize: vertical; }
+.go { margin: 16px 18px 18px; font: 600 16px var(--text); color: #fff; background: var(--route); border: 0; border-radius: 9px; padding: 12px 18px; cursor: pointer; }
+.go:disabled { opacity: .55; cursor: wait; }
+.verdict { padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
+.empty { color: var(--muted); margin: 0; max-width: 46ch; }
+.call { font: 700 28px/1.15 var(--display); letter-spacing: -0.01em; }
+.call.route { color: var(--route); } .call.ask { color: var(--ask); } .call.keep { color: var(--ink); }
+.why { color: var(--muted); font-size: 15px; margin-top: -8px; }
+
+/* The handoff path: the one memorable element */
+.path { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+.node { display: inline-flex; flex-direction: column; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--paper); font-weight: 600; line-height: 1.15; }
+.node small { font-weight: 400; color: var(--muted); font-size: 12.5px; }
+.node.bot { border-style: dashed; }
+.node.dest { border-color: var(--route); background: var(--route-soft); }
+.node.dest.ask { border-color: var(--ask); background: var(--ask-soft); }
+.edge { display: inline-flex; flex-direction: column; align-items: center; padding: 0 6px; min-width: 104px; font-size: 13px; color: var(--muted); text-align: center; line-height: 1.2; }
+.edge::after { content: ""; display: block; width: 100%; height: 2px; margin-top: 5px; background: linear-gradient(90deg, var(--line), var(--route)); clip-path: polygon(0 0, 94% 0, 100% 50%, 94% 100%, 0 100%); }
+.cands { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.cand { display: grid; grid-template-columns: 9.5rem 1fr 3.4rem; gap: 10px; align-items: center; font-size: 15px; }
+.cand .who { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar { height: 10px; border-radius: 6px; background: var(--paper); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--route); border-radius: 6px; transform-origin: left; animation: grow .5s ease-out; }
+@keyframes grow { from { transform: scaleX(0); } }
+.cand .p { text-align: right; font-variant-numeric: tabular-nums; }
+.cand .ev { grid-column: 1 / -1; font-size: 13.5px; color: var(--muted); margin-top: -4px; }
+.note { font-size: 13.5px; color: var(--muted); }
+.err { color: var(--wrong); }
+
+/* Result */
+.compare { display: grid; gap: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 26px; }
+.period { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+.period h3 { font: 700 19px var(--display); }
+.period .n { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+.metric { margin: 14px 0 4px; font-size: 14px; color: var(--muted); }
+.row { display: grid; grid-template-columns: 9rem 1fr 3.3rem; gap: 10px; align-items: center; font-size: 15px; margin: 6px 0; }
+.row .bar { height: 14px; }
+.row.nomem .bar i { background: var(--muted); } .row.mem .bar i { background: var(--route); } .row.cls .bar i { background: var(--line); outline: 1px dashed var(--muted); }
+.row.ask .bar i { background: var(--ask); }
+.row .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* Memory explorer */
+.explore { display: grid; grid-template-columns: 16rem 1fr; gap: 28px; margin-top: 22px; align-items: start; }
+.handoffs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.handoffs li { background: var(--sheet); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+.handoffs .who { font-weight: 600; }
+.handoffs .times { font-variant-numeric: tabular-nums; color: var(--muted); }
+.handoffs .ex { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
+
+/* Replay */
+.replay { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14.5px; background: var(--sheet); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.replay th, .replay td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.replay th { font-weight: 600; color: var(--muted); font-size: 13.5px; background: var(--paper); }
+.replay td.t { max-width: 30ch; }
+.ok { color: var(--right); font-weight: 600; } .no { color: var(--wrong); font-weight: 600; } .q { color: var(--ask); font-weight: 600; }
+.tally { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px; font-size: 15px; }
+.scroll { overflow-x: auto; }
+
+.limits { display: grid; gap: 14px; max-width: 70ch; padding-left: 1.1em; }
+footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+.theme { font: 14px var(--text); background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+
+@media (max-width: 820px) {
+  .desk, .compare, .explore { grid-template-columns: 1fr; }
+  .inbox { border-right: 0; border-bottom: 1px solid var(--line); }
+  .issues { max-height: 300px; }
+  .cand { grid-template-columns: 7rem 1fr 3rem; }
+  .row { grid-template-columns: 7rem 1fr 3rem; }
+  .edge { min-width: 80px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar i { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="mark">
+      <svg width="30" height="22" viewBox="0 0 30 22" aria-hidden="true"><circle cx="5" cy="16" r="4" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2"/><circle cx="25" cy="6" r="4" fill="currentColor"/><path d="M9 14 Q15 4 21 6.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Handoff Graph
+    </div>
+    <nav class="links" aria-label="Project links">
+      <a href="https://github.com/aashish-g03/handoff-graph">Code</a>
+      <a href="https://github.com/aashish-g03/handoff-graph/blob/main/docs/RESULTS.md">Full results</a>
+      <a href="https://github.com/aashish-g03/handoff-graph/blob/main/docs/FLOW.md">How it works</a>
+      <button class="theme" id="theme" type="button">Dark mode</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Issue routing that remembers who hands what to whom</h1>
+    <p class="lede">Every time a VS Code engineer passes an issue on, Handoff Graph records it in a FalkorDB graph. When a new issue arrives, it uses that memory to route it, keep it, or ask a human, and <strong>it shows the handoff path behind every decision</strong>. Try it on a real issue.</p>
+
+    <div class="desk">
+      <div class="inbox">
+        <div class="inbox-head">
+          <h3 id="inbox-title">Recent VS Code issues</h3>
+          <div class="tabs" role="group" aria-label="Choose input">
+            <button type="button" id="tab-real" aria-pressed="true">Real issues</button>
+            <button type="button" id="tab-own" aria-pressed="false">Write your own</button>
+          </div>
+        </div>
+        <ul class="issues" id="issues" aria-labelledby="inbox-title"></ul>
+        <div class="own" id="own" hidden>
+          <label>Title <input id="own-title" maxlength="300" placeholder="Terminal tabs lose their names after reload"></label>
+          <label>Description <textarea id="own-body" maxlength="3000" placeholder="What happens, steps, version…"></textarea></label>
+          <label>The triage bot would assign it to
+            <select id="own-who"></select>
+          </label>
+        </div>
+        <button class="go" id="go" type="button">Route this issue</button>
+      </div>
+      <div class="verdict" id="verdict" aria-live="polite">
+        <p class="empty">Pick an issue on the left, then route it. The answer takes about a second: the graph narrows the candidates and TypeSafe Jev makes the call.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="result">
+    <h2>The same AI, with and without memory</h2>
+    <p class="prose">We replayed real VS Code triage in time order. Each issue was routed at the moment VS Code's own triage classifier first assigned it, using only what was known at that moment. Two held-out periods, each run once with a frozen design.</p>
+    <div class="compare" id="compare"></div>
+    <p class="note" style="margin-top:18px">VS Code's classifier is a dedicated system (<code>classifier-deep</code>) with per-category confidence thresholds and a hand-maintained ownership file. It's shown for scale. Handoff Graph does not beat it on a single first guess, and on the issues it routes, the two are right equally often (within 0.2 points).</p>
+  </section>
+
+  <section id="memory">
+    <h2>What the memory knows</h2>
+    <p class="prose">These are the handoffs the learner agent recorded: who passes work to whom, how often, and on which issues. They're the edges the router reads.</p>
+    <div class="explore">
+      <label class="note" for="person">Engineer the triage bot assigns to<br>
+        <select class="pick" id="person"></select>
+      </label>
+      <ul class="handoffs" id="handoffs"></ul>
+    </div>
+  </section>
+
+  <section id="replay">
+    <h2>Recorded decisions, issue by issue</h2>
+    <p class="prose">A sample of the scored held-out decisions. These are the recorded results, not recomputed. The owner is who still had the issue weeks later.</p>
+    <div class="tally" id="tally"></div>
+    <div class="scroll"><table class="replay" id="replay-table"></table></div>
+  </section>
+
+  <section id="limits">
+    <h2>What it doesn't do</h2>
+    <ul class="limits">
+      <li>It doesn't beat VS Code's classifier at a single first guess: 74% vs 77% in summer, 59% vs 62% in spring. Even perfect knowledge of which issues get forwarded would reach only about 85%. Most handoffs depend on workload and absences you can't see when an issue arrives.</li>
+      <li>Handoff memory goes stale within weeks. The memory's best alternative named the eventual owner of 38% of bounced issues in July–August, but 13% a month later. It has to keep learning.</li>
+      <li>All evidence comes from one repository. It only helps where issues actually get reassigned. In Next.js, PyTorch and Rust that's 0–1%; in VS Code it's 16%.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Built for Graph Hacks: Context for AI Agents. Graph memory in FalkorDB, decisions by TypeSafe Jev (jev-1.14.0), data from public microsoft/vscode issues.
+    Also available as an MCP server at <code>/mcp</code> on this host.
+  </footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct = (x, d = 0) => (x * 100).toFixed(d) + "%";
+const gh = (n) => `<a href="https://github.com/microsoft/vscode/issues/${n}" target="_blank" rel="noopener">#${n}</a>`;
+let data, chosen = null, mode = "real";
+
+// Theme toggle (remembered per viewer when storage is available)
+const root = document.documentElement;
+function setTheme(t) { root.dataset.theme = t; $("#theme").textContent = t === "dark" ? "Light mode" : "Dark mode"; try { localStorage.setItem("hg-theme", t); } catch {} }
+try { const t = localStorage.getItem("hg-theme"); if (t) setTheme(t); else if (matchMedia("(prefers-color-scheme: dark)").matches) $("#theme").textContent = "Light mode"; } catch {}
+$("#theme").onclick = () => setTheme((root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark" ? "light" : "dark");
+
+function renderIssues() {
+  $("#issues").innerHTML = data.examples.map((e, i) => `
+    <li><button type="button" data-i="${i}" aria-current="${chosen === i}">
+      <span class="t">${esc(e.title)}</span>
+      <span class="m">#${e.number}, the triage bot would assign @${esc(e.proposed)}</span>
+    </button></li>`).join("");
+  $("#issues").querySelectorAll("button").forEach((b) => b.onclick = () => { chosen = +b.dataset.i; renderIssues(); });
+}
+
+function setMode(m) {
+  mode = m;
+  $("#tab-real").setAttribute("aria-pressed", m === "real"); $("#tab-own").setAttribute("aria-pressed", m === "own");
+  $("#issues").hidden = m !== "real"; $("#own").hidden = m !== "own";
+  $("#inbox-title").textContent = m === "real" ? "Recent VS Code issues" : "Your issue";
+}
+$("#tab-real").onclick = () => setMode("real");
+$("#tab-own").onclick = () => setMode("own");
+
+function parsePath(path) {
+  const h = path.match(/@(\S+) handed (\d+)\/(\d+).*? to @(\S+?)(?: |$)/);
+  if (h) return { kind: "handed", from: h[1], times: +h[2], of: +h[3], to: h[4] };
+  const k = path.match(/@(\S+?); kept (\d+)\/(\d+)/);
+  if (k) return { kind: "kept", from: k[1], times: +k[2], of: +k[3] };
+  return null;
+}
+
+function renderVerdict(res, proposed) {
+  if (res.error) { $("#verdict").innerHTML = `<p class="err">${esc(res.error)}</p>`; return; }
+  const top = res.candidates?.[0];
+  let call, cls, dest;
+  if (res.escalate && !res.candidates) { call = "Ask a human"; cls = "ask"; }
+  else if (res.escalate) { call = "Ask a human"; cls = "ask"; dest = top?.login; }
+  else if (res.owner === proposed) { call = `Keep @${res.owner}`; cls = "keep"; dest = res.owner; }
+  else { call = `Route to @${res.owner}`; cls = "route"; dest = res.owner; }
+  const destCand = res.candidates?.find((c) => c.login === dest);
+  const p = destCand ? parsePath(destCand.path) : null;
+  let chain = "";
+  if (p && p.kind === "handed") {
+    chain = `<div class="path" aria-label="Handoff path">
+      <span class="node bot">@${esc(proposed)}<small>triage bot's pick</small></span>
+      <span class="edge">handed ${p.times} of ${p.of}<br>issues to</span>
+      <span class="node dest ${cls === "ask" ? "ask" : ""}">@${esc(p.to)}<small>${cls === "ask" ? "most likely, not certain" : "routed here"}</small></span>
+    </div>`;
+  } else if (p && p.kind === "kept") {
+    chain = `<div class="path" aria-label="Handoff path">
+      <span class="node bot">@${esc(proposed)}<small>triage bot's pick</small></span>
+      <span class="edge">kept ${p.times} of ${p.of}<br>issues it was given</span>
+      <span class="node dest">@${esc(proposed)}<small>stays with them</small></span>
+    </div>`;
+  }
+  const cands = (res.candidates || []).map((c) => {
+    const q = parsePath(c.path);
+    const ev = c.path.match(/\(e\.g\. ([^)]+)\)/);
+    const links = ev ? ev[1].split(", ").map((x) => gh(x.replace("#", ""))).join(", ") : "";
+    const desc = q ? (q.kind === "kept" ? `kept ${q.times} of ${q.of} issues the bot gave them` : `received ${q.times} of @${esc(q.from)}'s ${q.of} issues`) : esc(c.path);
+    return `<li class="cand"><span class="who">@${esc(c.login)}</span><span class="bar"><i style="width:${(c.probability * 100).toFixed(1)}%"></i></span><span class="p">${pct(c.probability)}</span>
+      <span class="ev">${desc}${links ? `, for example ${links}` : ""}</span></li>`;
+  }).join("");
+  $("#verdict").innerHTML = `
+    <div><div class="call ${cls}">${call}</div></div>
+    <p class="why">${esc(res.reason)}${res.memory_trusted === false ? " The graph has too little handoff memory for this person, so it keeps the bot's pick." : ""}</p>
+    ${chain}
+    ${cands ? `<div><h3>Every candidate the graph considered</h3><ul class="cands">${cands}</ul></div>` : ""}
+    <p class="note">${res.jev_calls ?? 0} Jev call${res.jev_calls === 1 ? "" : "s"}. It routes when the leader is ahead by ${res.gate}; asks a human otherwise.</p>`;
+}
+
+$("#go").onclick = async () => {
+  let payload;
+  if (mode === "real") {
+    if (chosen === null) { $("#verdict").innerHTML = `<p class="err">Pick an issue from the list first.</p>`; return; }
+    const e = data.examples[chosen];
+    payload = { title: e.title, body: e.body, proposed_assignee: e.proposed };
+  } else {
+    payload = { title: $("#own-title").value, body: $("#own-body").value, proposed_assignee: $("#own-who").value };
+    if (!payload.title.trim()) { $("#verdict").innerHTML = `<p class="err">Add a title for your issue.</p>`; return; }
+  }
+  $("#go").disabled = true; $("#go").textContent = "Routing…";
+  try {
+    const r = await fetch("/api/route", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    renderVerdict(await r.json(), payload.proposed_assignee);
+  } catch { $("#verdict").innerHTML = `<p class="err">The server didn't answer. Try again in a moment.</p>`; }
+  $("#go").disabled = false; $("#go").textContent = "Route this issue";
+};
+
+function renderCompare() {
+  const block = (name, v, note) => `
+    <div class="period">
+      <h3>${name}</h3><div class="n">${v.n.toLocaleString()} held-out issues, ${note}</div>
+      <div class="metric">Has to ask a human</div>
+      <div class="row nomem ask"><span>Without memory</span><span class="bar"><i style="width:${v.no_memory.escalated * 100}%"></i></span><span class="v">${pct(v.no_memory.escalated)}</span></div>
+      <div class="row mem ask"><span>With memory</span><span class="bar"><i style="width:${v.memory.escalated * 100}%"></i></span><span class="v">${pct(v.memory.escalated)}</span></div>
+      <div class="metric">Right owner on the first try</div>
+      <div class="row nomem"><span>Without memory</span><span class="bar"><i style="width:${v.no_memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.no_memory.top1_accuracy)}</span></div>
+      <div class="row mem"><span>With memory</span><span class="bar"><i style="width:${v.memory.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.memory.top1_accuracy)}</span></div>
+      <div class="row cls"><span>VS Code classifier</span><span class="bar"><i style="width:${v.bot.top1_accuracy * 100}%"></i></span><span class="v">${pct(v.bot.top1_accuracy)}</span></div>
+    </div>`;
+  $("#compare").innerHTML = block("Summer 2026", data.result.summer, "Aug 25 – Sep 15") + block("Spring 2026", data.result.spring, "Apr 1 – May 15, separate graph");
+}
+
+function renderReplay() {
+  const cell = (pick, owner) => pick == null ? `<span class="q">asks a human</span>` : `<span class="${owner.includes(pick) ? "ok" : "no"}">@${esc(pick)}</span>`;
+  const t = { bot: [0, 0, 0], no_memory: [0, 0, 0], memory: [0, 0, 0] };
+  for (const r of data.replay) for (const k of Object.keys(t)) t[k][r[k] == null ? 2 : r.owner.includes(r[k]) ? 0 : 1]++;
+  const lab = { bot: "VS Code classifier", no_memory: "Jev without memory", memory: "Jev with memory" };
+  $("#tally").innerHTML = Object.entries(t).map(([k, v]) => `<span><strong>${lab[k]}</strong>: <span class="ok">${v[0]} right</span>, <span class="no">${v[1]} wrong</span>, <span class="q">${v[2]} asked</span></span>`).join("");
+  $("#replay-table").innerHTML = `<thead><tr><th>Issue</th><th>Final owner</th><th>VS Code classifier</th><th>Jev without memory</th><th>Jev with memory</th></tr></thead><tbody>` +
+    data.replay.map((r) => `<tr><td class="t">${gh(r.number)} ${esc(r.title)}</td><td>${r.owner.map((o) => "@" + esc(o)).join(", ")}</td><td>${cell(r.bot, r.owner)}</td><td>${cell(r.no_memory, r.owner)}</td><td>${cell(r.memory, r.owner)}</td></tr>`).join("") + "</tbody>";
+}
+
+async function loadPeople() {
+  const people = await (await fetch("/api/people")).json();
+  const opts = people.map((p) => `<option value="${esc(p.login)}">@${esc(p.login)} (${p.handoffs} handoffs)</option>`).join("");
+  $("#person").innerHTML = opts; $("#own-who").innerHTML = opts;
+  const pick = people.find((p) => p.login === "benibenj") ? "benibenj" : people[0]?.login;
+  $("#person").value = pick; showHistory(pick);
+  $("#person").onchange = (e) => showHistory(e.target.value);
+}
+async function showHistory(person) {
+  const rows = await (await fetch("/api/history?person=" + encodeURIComponent(person))).json();
+  const list = rows.result || rows;
+  $("#handoffs").innerHTML = list.map((h) => `<li><span class="who">@${esc(person)} handed issues to @${esc(h.to)}</span><span class="times">${h.times} times</span>
+    <span class="ex">For example ${h.example_issues.slice(0, 4).map(gh).join(", ")}</span></li>`).join("") || `<li>No handoffs recorded for @${esc(person)} yet.</li>`;
+}
+
+(async () => {
+  data = await (await fetch("/api/data")).json();
+  chosen = 0; renderIssues(); renderCompare(); renderReplay(); loadPeople();
+})();
+</script>
+</body>
+</html>
