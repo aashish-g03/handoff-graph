@@ -3,6 +3,7 @@ name = "handoff-graph"
 version = "0.1.0"
 description = "Issue routing that remembers who hands what to whom (FalkorDB + TypeSafe Jev)"
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "aashish-g03", email = "aashishg2003@gmail.com" }
 ]
