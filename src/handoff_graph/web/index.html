@@ -168,14 +168,14 @@ section.block { padding: var(--space-3xl) 0; border-top: 1px solid var(--color-r
 .fig + .fig { border-left: 1px solid var(--color-graphite-rule); }
 .fig .label { color: var(--color-on-graphite-2); }
 .fig-q { font: 500 var(--text-md)/1.35 var(--font-display); color: var(--color-on-graphite); margin: var(--space-sm) 0 var(--space-md); letter-spacing: -0.01em; }
-.pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--space-sm); align-items: end; margin-bottom: var(--space-lg); }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; margin-bottom: var(--space-lg); }
+.pair .side + .side { border-left: 1px solid var(--color-graphite-rule); padding-left: var(--space-md); }
 .pair .side { display: grid; gap: var(--space-2xs); min-width: 0; }
 .pair .tag { font: 500 var(--text-xs)/1.3 var(--font-mono); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-on-graphite-2); }
 .pair .side--with .tag { color: var(--color-signal-on-dark); }
 .pair b { font: 500 var(--text-figure)/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--color-on-graphite); }
 .pair .side--without b { color: var(--color-on-graphite-2); }
 .pair .sub { font-size: var(--text-xs); color: var(--color-on-graphite-2); }
-.pair .arrow { color: var(--color-signal-on-dark); font: 500 var(--text-xl)/1 var(--font-mono); padding-bottom: 1.6rem; }
 .rows { display: grid; gap: var(--space-xs); }
 .row { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 3.4rem; gap: var(--space-xs); align-items: center; font-size: var(--text-sm); }
 .row .v { text-align: right; font: 500 var(--text-sm)/1 var(--font-mono); color: var(--color-on-graphite); font-variant-numeric: tabular-nums; }
@@ -250,8 +250,7 @@ footer .mark { font-size: var(--text-sm); }
   .row { grid-template-columns: 7rem minmax(0, 1fr) 3rem; }
   .cand { grid-template-columns: 6.5rem minmax(0, 1fr) 2.6rem; }
   .fig { padding: var(--space-md); }
-  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .pair .arrow { display: none; }
+  .pair .side + .side { padding-left: var(--space-sm); }
   section.block, .band { padding: var(--space-2xl) 0; }
   .picker-foot { flex-wrap: wrap; }
 }
@@ -495,7 +494,6 @@ function renderCompare() {
       <p class="fig-q">How often the AI gives up and hands the issue to a human</p>
       <div class="pair">
         <div class="side side--without"><span class="tag">Without graph memory</span><b>${pct(v.no_memory.escalated)}</b><span class="sub">of issues</span></div>
-        <span class="arrow" aria-hidden="true">→</span>
         <div class="side side--with"><span class="tag">With graph memory</span><b>${pct(v.memory.escalated)}</b><span class="sub">of issues</span></div>
       </div>
       <div class="row-title">How often it picks the right owner first time</div>
