@@ -1,0 +1,133 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+html,body{margin:0;background:#1C2230}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--graphite)}
+#stage::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--graphite-rule) 1px,transparent 1px),linear-gradient(90deg,var(--graphite-rule) 1px,transparent 1px);background-size:80px 80px;opacity:.18}
+.abs{position:absolute;will-change:transform,opacity}
+.ticket{width:640px;padding:26px 32px;border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 18px 50px rgba(0,0,0,.35);left:0;top:0}
+.ticket .id{font:500 21px "JetBrains Mono";color:var(--muted)}
+.ticket .t{font:500 34px/1.2 "Space Grotesk";margin-top:6px;letter-spacing:-.01em}
+.ticket .who{font:500 21px "JetBrains Mono";color:var(--accent);margin-top:10px}
+.av{width:180px;height:180px;border-radius:50%;background:var(--graphite-2);border:3px solid var(--graphite-rule);display:flex;align-items:center;justify-content:center;font:500 56px "Space Grotesk";color:var(--on-g)}
+.avl{font:500 26px "JetBrains Mono";color:var(--on-g-2);text-align:center;width:300px;letter-spacing:.04em}
+.tag{font:600 24px "JetBrains Mono";color:#1C2230;background:var(--ask-dark);padding:8px 14px;border-radius:8px;letter-spacing:.03em}
+.big{font:500 220px/1 "Space Grotesk";color:var(--on-g);letter-spacing:-.04em;text-align:center;width:1920px;left:0}
+.sub{font:400 40px/1.3 Inter;color:var(--on-g-2);text-align:center;width:1920px;left:0}
+.kick{font:500 24px "JetBrains Mono";color:var(--signal);letter-spacing:.08em;text-transform:uppercase;text-align:center;width:1920px;left:0}
+.word{font:500 120px/1 "Space Grotesk";color:var(--on-g);letter-spacing:-.035em;text-align:center;width:1920px;left:0}
+.say{font:500 44px "Space Grotesk";color:var(--on-g);text-align:center;width:1920px;left:0;letter-spacing:-.01em}
+svg{position:absolute;left:0;top:0}
+svg text{font-family:"JetBrains Mono",monospace}
+</style></head><body><div id="stage">
+<!-- scene 1 -->
+<div id="s1" class="abs" style="inset:0">
+  <div id="avA" class="abs av" style="left:470px;top:600px">A</div>
+  <div id="avB" class="abs av" style="left:870px;top:600px">B</div>
+  <div id="avC" class="abs av" style="left:1270px;top:600px">C</div>
+  <div id="lA" class="abs avl" style="left:410px;top:800px">you</div>
+  <div id="lB" class="abs avl" style="left:810px;top:800px">a teammate</div>
+  <div id="lC" class="abs avl" style="left:1210px;top:800px">another team</div>
+  <div id="tagA" class="abs tag" style="left:610px;top:575px">not mine</div>
+  <div id="tagB" class="abs tag" style="left:1010px;top:575px">not mine</div>
+  <div id="ticket" class="abs ticket"><div class="id">#341421 · assigned to you</div><div class="t">WSL webview resources return 401</div><div class="who">needs an owner</div></div>
+</div>
+<!-- scene 2 -->
+<div id="s2" class="abs" style="inset:0">
+  <div id="k2" class="abs kick" style="top:300px">microsoft/vscode</div>
+  <div id="num" class="abs big" style="top:360px">0</div>
+  <div id="sub1" class="abs sub" style="top:610px">issues handed on to someone else</div>
+  <div id="sub2" class="abs sub" style="top:670px;color:var(--signal)">in four and a half months</div>
+</div>
+<!-- scene 3 -->
+<div id="s3" class="abs" style="inset:0">
+  <svg id="g" width="1920" height="1080"></svg>
+  <div id="say1" class="abs say" style="top:120px">Every handoff is knowledge</div>
+  <div id="say2" class="abs say" style="top:120px;color:var(--on-g-2)">Nobody keeps it</div>
+  <div id="word" class="abs word" style="top:880px">Handoff Graph</div>
+</div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x) => Math.max(0, Math.min(1, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const out = (x) => 1 - Math.pow(1 - x, 3);
+const lerp = (a, b, x) => a + (b - a) * x;
+function set(el, { x, y, s = 1, o = 1 }) { el.style.opacity = o; el.style.transform = `translate(${x || 0}px,${y || 0}px) scale(${s})`; }
+
+// graph geometry for scene 3
+const C = { x: 960, y: 520 };
+const NODES = [["B", 75], ["C", 64], ["D", 11], ["E", 10], ["F", 7], ["G", 6]].map(([n, v], i) => {
+  const a = (-150 + i * 60) * Math.PI / 180; return { n, v, x: C.x + 400 * Math.cos(a), y: C.y + 290 * Math.sin(a) };
+});
+
+window.render = function (t) {
+  // ---------- scene 1: 0 – 7.6 ----------
+  const s1o = 1 - seg(t, 7.2, 7.7);
+  $("s1").style.opacity = s1o;
+  const tIn = out(seg(t, 0.08, 0.7));
+  // ticket path: centre -> above A -> above B -> above C
+  const P = [[640, 380], [320, 420], [720, 420], [1120, 420]];
+  let px = P[0][0], py = P[0][1];
+  const m1 = ease(seg(t, 2.96, 3.6)), m2 = ease(seg(t, 6.0, 6.45)), m3 = ease(seg(t, 6.55, 7.0));
+  px = lerp(px, P[1][0], m1); py = lerp(py, P[1][1], m1);
+  px = lerp(px, P[2][0], m2); py = lerp(py, P[2][1], m2) - 40 * Math.sin(Math.PI * m2);
+  px = lerp(px, P[3][0], m3); py = lerp(py, P[3][1], m3) - 40 * Math.sin(Math.PI * m3);
+  const tsc = lerp(1, 0.75, m1);
+  set($("ticket"), { x: px, y: py + 30 * (1 - tIn), s: tsc, o: tIn });
+  $("ticket").style.transformOrigin = "0 0";
+  ["A", "B", "C"].forEach((k, i) => {
+    const a = out(seg(t, 2.5 + i * 0.12, 3.0 + i * 0.12));
+    set($("av" + k), { s: lerp(0.6, 1, a), o: a }); set($("l" + k), { o: a });
+  });
+  const tg = (a) => { const p = out(seg(t, a, a + 0.3)); return { s: lerp(0.5, 1, p), o: p }; };
+  set($("tagA"), tg(4.32)); set($("tagB"), tg(6.4));
+  // highlight current holder
+  const holder = t < 6.2 ? "A" : t < 6.75 ? "B" : "C";
+  ["A", "B", "C"].forEach((k) => $("av" + k).style.borderColor = (t > 3.4 && k === holder) ? "var(--signal)" : "var(--graphite-rule)");
+
+  // ---------- scene 2: 7.2 – 14.2 ----------
+  const s2o = seg(t, 7.3, 7.8) * (1 - seg(t, 13.7, 14.2));
+  $("s2").style.opacity = s2o;
+  set($("k2"), { o: seg(t, 7.3, 7.8) });
+  const c = out(seg(t, 8.32, 10.6));
+  $("num").textContent = Math.round(1678 * c).toLocaleString("en-US");
+  set($("num"), { s: lerp(0.94, 1, out(seg(t, 8.2, 8.8))), o: seg(t, 8.2, 8.6) });
+  const a1 = out(seg(t, 10.88, 11.4)), a2 = out(seg(t, 12.16, 12.7));
+  set($("sub1"), { y: 20 * (1 - a1), o: a1 }); set($("sub2"), { y: 20 * (1 - a2), o: a2 });
+
+  // ---------- scene 3: 13.84 – end ----------
+  const s3o = seg(t, 13.9, 14.4);
+  $("s3").style.opacity = s3o;
+  const fadeMem = 1 - 0.85 * ease(seg(t, 18.16, 18.7));
+  const back = ease(seg(t, 19.44, 20.0));
+  const edgeO = fadeMem + (1 - fadeMem) * back;
+  const lift = -95 * back;
+  let h = `<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7EA2FF"/></marker></defs><g transform="translate(0,${lift})">`;
+  NODES.forEach((nd, i) => {
+    const draw = ease(seg(t, 15.76 + i * 0.22, 16.5 + i * 0.22));
+    const dx = nd.x - C.x, dy = nd.y - C.y, L = Math.hypot(dx, dy);
+    const sx = C.x + dx / L * 82, sy = C.y + dy / L * 82, ex = nd.x - dx / L * 58, ey = nd.y - dy / L * 58;
+    const w = Math.max(3, nd.v / 75 * 14);
+    if (draw > 0) {
+      h += `<line x1="${sx}" y1="${sy}" x2="${lerp(sx, ex, draw)}" y2="${lerp(sy, ey, draw)}" stroke="#7EA2FF" stroke-width="${w}" stroke-linecap="round" opacity="${edgeO * (nd.v > 20 ? 1 : 0.6)}" ${draw > 0.98 ? 'marker-end="url(#ar)"' : ""}/>`;
+    }
+    if (i === 0 && draw > 0.6) {
+      const mx = (sx + ex) / 2, my = (sy + ey) / 2, o = out(seg(t, 16.3, 16.8)) * edgeO;
+      h += `<g opacity="${o}"><rect x="${mx - 104}" y="${my - 52}" width="208" height="38" rx="8" fill="#262D3D" stroke="#38415A"/><text x="${mx}" y="${my - 26}" text-anchor="middle" font-size="19" fill="#7EA2FF">HANDED_OFF</text></g>`;
+    }
+    const p = out(seg(t, 14.1 + i * 0.1, 14.6 + i * 0.1));
+    h += `<g opacity="${p}" transform="translate(${nd.x},${nd.y}) scale(${lerp(0.5, 1, p)})"><circle r="54" fill="#262D3D" stroke="${nd.v > 20 ? '#7EA2FF' : '#38415A'}" stroke-width="3"/><text y="12" text-anchor="middle" font-size="34" fill="#E8EBF2">${nd.n}</text></g>`;
+  });
+  const pc = out(seg(t, 13.95, 14.5));
+  h += `<g opacity="${pc}" transform="translate(${C.x},${C.y}) scale(${lerp(0.6, 1, pc)})"><circle r="80" fill="#E8EBF2"/><text y="16" text-anchor="middle" font-size="48" fill="#1C2230">A</text></g></g>`;
+  $("g").innerHTML = h;
+  const sy1 = out(seg(t, 14.0, 14.5)) * (1 - seg(t, 17.9, 18.2));
+  set($("say1"), { o: sy1, y: 10 * (1 - sy1) });
+  const sy2 = out(seg(t, 18.2, 18.6)) * (1 - seg(t, 19.3, 19.6));
+  set($("say2"), { o: sy2 });
+  const wd = out(seg(t, 19.44, 20.1));
+  set($("word"), { o: wd, y: 30 * (1 - wd) + lift * 0.2, s: lerp(0.96, 1, wd) });
+};
+window.render(0);
+</script></body></html>

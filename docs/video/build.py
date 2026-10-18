@@ -16,7 +16,7 @@ def dur(p):
 # shot: source, start, audio key, audio delay, tail pad, zoom keyframes [(t, z, cx, cy)]
 CON = (1234, 500)       # decision console in the hero
 SHOTS = [
-    ("s1", "page", 1.0, "s1", 0.3, 0.6, [(0, 1.0, 960, 540), (20.5, 1.12, 900, 470)]),
+    ("s1", "intro", 0.0, "s1_ts", 0.3, 0.9, [(0, 1.0, 960, 540)]),
     ("s2a", "page", 18.06, "s2a", 0.2, 0.6, [(0, 1.0, 960, 540), (3.2, 1.0, 960, 540), (4.6, 1.55, *CON), (18.6, 1.55, *CON)]),
     ("s2b", "page", 39.16, "s2b", 1.6, 0.6, [(0, 1.0, 960, 540), (3.4, 1.0, 960, 540), (4.8, 1.55, 1234, 430), (12.5, 1.55, 1234, 430)]),
     ("s2c", "page", 53.33, "s2c", 1.6, 0.6, [(0, 1.0, 960, 540), (3.4, 1.0, 960, 540), (4.8, 1.55, 1234, 440), (16.0, 1.55, 1234, 440)]),
@@ -87,7 +87,7 @@ def run(cmd):
 
 seg_files = []
 card = lambda name, d: (V / "cards" / f"{name}.png", d)
-for name, d in [("title", 4.0)]:
+for name, d in []:
     png, D = card(name, d)
     out = V / "out" / f"seg_{name}.mp4"
     run(["ffmpeg", "-y", "-v", "error", "-loop", "1", "-t", str(D), "-i", str(png), "-f", "lavfi", "-t", str(D), "-i", "anullsrc=r=44100:cl=stereo",
@@ -100,7 +100,8 @@ for key, src, start, akey, delay, tail, keys in SHOTS:
     ad = dur(a)
     D = round(delay + ad + tail, 2)
     ass = V / "out" / f"{key}.ass"
-    captions(akey, delay, ad, ass)
+    captions(akey if akey in N else akey.replace('_ts',''), delay, ad, ass)
+    if src == 'intro': ass.write_text(ass.read_text().split('[Events]')[0] + '[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n')
     if PLAIN:
         zoom = "scale=1920:1080"
     else:
@@ -113,7 +114,7 @@ for key, src, start, akey, delay, tail, keys in SHOTS:
           f"fade=in:st=0:d=0.35,fade=out:st={D - 0.35}:d=0.35,format=yuv420p[v];"
           f"[1:a]adelay={int(delay * 1000)}:all=1,apad,atrim=0:{D},afade=out:st={D - 0.3}:d=0.3[a]")
     out = V / "out" / f"seg_{key}.mp4"
-    run(["ffmpeg", "-y", "-v", "error", "-ss", str(start), "-t", str(D), "-i", str(V / "clips" / f"{src}.webm"), "-i", str(a),
+    run(["ffmpeg", "-y", "-v", "error", "-ss", str(start), "-t", str(D), "-i", str(V / "clips" / (f"{src}.mp4" if src == "intro" else f"{src}.webm")), "-i", str(a),
          "-filter_complex", vf, "-map", "[v]", "-map", "[a]", "-t", str(D), "-c:v", "libx264", "-preset", "medium", "-crf", "18",
          "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-ac", "2", str(out)])
     print(key, "audio", round(ad, 1), "segment", D)
