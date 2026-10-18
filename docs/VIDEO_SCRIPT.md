@@ -49,7 +49,7 @@ Optional, if there's time: ask *"Who does pwang347 usually hand issues to?"* to 
 
 ## Shot 5: The result, honestly (2:05–2:30)
 **Screen:** the README "The result" table.
-> "So here's the result. The same AI, with and without memory. Without the graph it has to hand two-thirds of issues to a human. With FalkorDB memory, about one in twenty. When it does route, it's as accurate as Microsoft's dedicated triage classifier on the same issues, and within a few points of it on the first guess, with no training and no per-repo model. It doesn't beat that classifier on a single first guess, and we tested why: what decides most handoffs isn't visible when an issue arrives. And memory about people goes stale within weeks, so it has to keep learning. Handoff Graph does, and it shows its reasoning every time."
+> "So here's the result. The same AI, with and without memory. Without the graph it has to hand two-thirds of issues to a human. With FalkorDB memory, about one in twenty. When it does route, it's about as accurate as Microsoft's dedicated triage classifier on the same issues, and within a few points of it on the first guess, with no training and no per-repo model. It doesn't beat that classifier on a single first guess, and we tested why: what decides most handoffs isn't visible when an issue arrives. And memory about people goes stale within weeks, so it has to keep learning. Handoff Graph does, and it shows its reasoning every time."
 
 **End card:** repo URL, MCP URL, "Built with FalkorDB + TypeSafe Jev · Graph Hacks 2026".
 

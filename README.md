@@ -6,7 +6,7 @@ Every time an issue is passed on ("not me, ask @y"), a *learner* agent records t
 
 ### The result
 
-> **Without graph memory, the same AI has to hand about two-thirds of issues to a human. With it, about one in twenty. When it does route, it's as accurate as Microsoft's dedicated triage classifier on the same issues, and it's within 2–4 points of that classifier on first-try accuracy. It needs no training and no per-repo model, and it shows the graph path for every decision.**
+> **Without graph memory, the same AI has to hand about two-thirds of issues to a human. With it, about one in twenty. When it does route, it's about as accurate as Microsoft's dedicated triage classifier on the same issues (within 0.2 points), and it's within 2–4 points of that classifier on first-try accuracy. It needs no training and no per-repo model, and it shows the graph path for every decision.**
 
 Measured on two held-out periods of real microsoft/vscode issues (summer n = 1,133; spring n = 3,064), each run once with a frozen design:
 
