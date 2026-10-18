@@ -1,4 +1,4 @@
-# Results: one-time HOLDOUT run (frozen design, commit d974fa6)
+# Results: one-time HOLDOUT run (frozen design, commit e5517ae, "Freeze design: contrastive memory profiles…")
 
 Command: `uv run python -m handoff_graph.replay --arms bot,graph,jev_nograph,jev_keep,jev_graph --holdout`
 File: `results/replay_20261015T203103Z.json`.
@@ -31,7 +31,7 @@ On the 259 bounced issues, the graph's top learned alternative was the final own
 - **Handoff patterns drift.** The memory's top alternative matched the final owner on 38% of DEV bounces (Jul 20-Aug 24) but 13% of HOLDOUT bounces (Aug 25-Sep 15). Who passes what to whom in this team changes within weeks, which argues for a router that keeps learning online rather than a classifier trained once.
 - **Reproducibility.** After routing logic moved into `agent.route_issue` (shared with the MCP server), an offline re-run from cached Jev answers reproduced every HOLDOUT number exactly (`results/replay_20261015T203413Z.json`).
 
-# Fresh spring HOLDOUT (design v2, run once; commit ccac0b2)
+# Fresh spring HOLDOUT (design v2, run once; commit ce4ba4e, "Spring fresh-holdout protocol…")
 
 Command: `uv run python -m handoff_graph.replay --dataset spring --arms bot,graph,jev_nograph,jev_keep,jev_graph,graph_v2,jev_graph_v2`
 File: `results/replay_20261015T210435Z.json`.
