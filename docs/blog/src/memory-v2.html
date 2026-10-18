@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.frame{width:720px;padding:30px 32px;background:var(--paper)}
+h2{font-size:26px;margin:6px 0 8px;line-height:1.15}
+p{font-size:15px;color:var(--muted);line-height:1.5}
+.label{font-size:12px}
+pre{font:400 13px/1.6 "JetBrains Mono";background:var(--graphite);color:var(--on-g);border-radius:8px;padding:14px 16px;white-space:pre-wrap;margin-top:6px}
+pre .k{color:var(--signal)}
+.res{font:400 13.5px/1.5 Inter;color:var(--ink-2);margin-top:10px}
+.res b{color:var(--ink);font-weight:600}
+svg text{font-family:"JetBrains Mono",monospace}
+</style></head><body><div class="frame">
+<span class="label">The memory, as FalkorDB stores it</span>
+<h2>Who one engineer passes work to</h2>
+<p>The bot routed 405 issues to one VS Code engineer (A) between June and October. Each time A handed one on, the learner wrote a <span class="mono">HANDED_OFF</span> edge. Edge width shows how often.</p>
+<svg viewBox="0 0 656 395" width="656" height="395" id="g"></svg>
+<pre><span class="k">MATCH</span> (a:Person {login: $first_pick})-[h:HANDED_OFF]-&gt;(b:Person)
+<span class="k">WHERE</span> h.at &lt; $t <span class="k">AND</span> h.kind <span class="k">IN</span> ['forward','reassign']
+<span class="k">RETURN</span> b.login, count(h) <span class="k">AS</span> times <span class="k">ORDER BY</span> times <span class="k">DESC</span></pre>
+<div class="res">Runs in 0.6 ms. The router turns the counts into a prior: <b>kept 238 of 405</b>, <b>handed 75 to B</b>, <b>64 to C</b>, and so on. Real microsoft/vscode data, names replaced with letters.</div>
+<script>
+const C={x:170,y:190};
+const T=[["B",75],["C",64],["D",11],["E",10],["F",7],["G",6]];
+let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#2F5FE0"/></marker></defs>`;
+const ang=[-60,-27,2,27,50,72].map(a=>a*Math.PI/180);
+T.forEach(([n,v],i)=>{const r=330,x=C.x+r*Math.cos(ang[i]),y=C.y+r*Math.sin(ang[i])*0.5;
+  const w=Math.max(2,v/75*10);
+  h+=`<line x1="${C.x}" y1="${C.y}" x2="${x-36*Math.cos(ang[i])}" y2="${y-24*Math.sin(ang[i])}" stroke="#2F5FE0" stroke-opacity="${v>20?0.9:0.45}" stroke-width="${w}" marker-end="url(#ar)"/>`;
+  const mx=C.x+(x-C.x)*0.58, my=C.y+(y-C.y)*0.58;
+  h+=`<rect x="${mx-26}" y="${my-13}" width="52" height="26" rx="6" fill="#F7F8FA" stroke="#DDE2EA"/><text x="${mx}" y="${my+5}" text-anchor="middle" font-size="15" fill="#1B2230" font-weight="500">${v}×</text>`;
+  h+=`<circle cx="${x}" cy="${y}" r="28" fill="#fff" stroke="${v>20?"#2F5FE0":"#C5CCD8"}" stroke-width="2"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" fill="#1B2230">${n}</text>`;});
+h+=`<circle cx="${C.x}" cy="${C.y}" r="50" fill="#1C2230"/><text x="${C.x}" y="${C.y}" text-anchor="middle" font-size="20" fill="#E8EBF2">A</text><text x="${C.x}" y="${C.y+20}" text-anchor="middle" font-size="12" fill="#A9B1C3">bot's pick</text>`;
+h+=`<path d="M ${C.x-32} ${C.y-40} C ${C.x-120} ${C.y-160}, ${C.x+40} ${C.y-175}, ${C.x+20} ${C.y-48}" fill="none" stroke="#8B93A3" stroke-width="5" marker-end="url(#ar)"/>`;
+h+=`<rect x="${C.x-150}" y="${C.y-180}" width="168" height="28" rx="6" fill="#fff" stroke="#DDE2EA"/><text x="${C.x-66}" y="${C.y-161}" text-anchor="middle" font-size="15" fill="#1B2230">kept 238 of 405</text>`;
+document.getElementById("g").innerHTML=h;
+</script></div></body></html>

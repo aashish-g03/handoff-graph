@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.frame{width:720px;padding:30px 32px;background:var(--paper)}
+h2{font-size:24px;margin:6px 0 6px;line-height:1.2}
+.label{font-size:12px}
+.lede{font-size:14px;color:var(--muted);margin-bottom:18px}
+.panel{margin-bottom:18px}
+.panel h3{font-size:18px}
+.dir{font-size:13.5px;color:var(--muted);margin:2px 0 10px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.period .label{display:block;margin-bottom:6px}
+.bar{display:grid;grid-template-columns:96px 1fr 40px;align-items:center;gap:8px;font-size:13.5px;margin:6px 0;color:var(--ink-2)}
+.track{height:16px;position:relative;border-left:1px solid var(--rule-2)}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0}
+.without i{background:var(--gray)} .with i{background:var(--accent)}
+.cls i{background:transparent;border:1.5px dashed var(--ink-2);border-left:0}
+.v{font:500 14px "JetBrains Mono";color:var(--ink);text-align:right}
+.with .v{font-weight:700}
+.foot{font-size:13px;color:var(--muted);border-top:1px solid var(--rule);padding-top:10px;line-height:1.5}
+</style></head><body><div class="frame">
+<span class="label">Results: two held-out periods, each run once</span>
+<h2>Same AI model and decision code, with and without graph memory</h2>
+<p class="lede">Summer: Aug 25 to Sep 15, 1,133 issues. Spring: Apr 1 to May 15, 3,064 issues, in its own graph.</p>
+<div id="p"></div>
+<p class="foot">Dashed: VS Code's dedicated triage classifier, shown for scale. It never asks a human. Handoff Graph does not beat it on a first guess.</p>
+<script>
+const D={esc:{summer:[66.46,3.71],spring:[64.46,6.63]},top:{summer:[18.45,74.32,76.88],spring:[14.98,58.49,62.14]}};
+const row=(c,n,v)=>`<div class="bar ${c}"><span>${n}</span><span class="track"><i style="width:${v}%"></i></span><span class="v">${Math.round(v)}%</span></div>`;
+const panel=(t,d,k)=>`<div class="panel"><h3>${t}</h3><div class="dir">${d}</div><div class="cols">${["summer","spring"].map(p=>`<div class="period"><span class="label">${p}</span>${row("without","Without",D[k][p][0])}${row("with","With memory",D[k][p][1])}${D[k][p][2]?row("cls","Classifier",D[k][p][2]):""}</div>`).join("")}</div></div>`;
+document.getElementById("p").innerHTML=panel("Asks a human","Share of issues handed to a person. Lower is better.","esc")+panel("Right owner on the first try","Share routed to the person who ended up owning it. Higher is better.","top");
+</script></div></body></html>

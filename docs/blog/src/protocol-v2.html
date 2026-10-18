@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.frame{width:720px;padding:30px 32px;background:var(--paper)}
+h2{font-size:24px;margin:6px 0 6px;line-height:1.2}
+.label{font-size:12px}
+.lede{font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.lane{margin-bottom:18px}
+.lane .name{font:500 17px "Space Grotesk";color:var(--ink);margin-bottom:6px}
+.lane .name small{font:400 13px Inter;color:var(--muted);margin-left:6px}
+.seg{display:flex;gap:2px;height:34px}
+.s{border-radius:4px;display:flex;align-items:center;justify-content:center;font:500 11.5px "JetBrains Mono";letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.learn{background:var(--paper-2);color:var(--ink-2);border:1px solid var(--rule)}
+.tune{background:#fff;border:1px solid var(--rule-2);color:var(--ink-2)}
+.dev{background:#fff;border:1px dashed var(--rule-2);color:var(--muted)}
+.hold{background:var(--accent);color:#fff}
+.uns{background:repeating-linear-gradient(45deg,var(--paper-2) 0 6px,var(--paper) 6px 12px);border:1px solid var(--rule);color:var(--muted)}
+.dates{display:flex;gap:2px;margin-top:4px}
+.dates span{font-size:12px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden}
+.rules{display:grid;gap:10px;margin-top:6px;border-top:1px solid var(--rule);padding-top:12px}
+.rules div{font-size:14px;color:var(--muted);line-height:1.45}
+.rules b{color:var(--ink);font-weight:600}
+</style></head><body><div class="frame">
+<span class="label">How the numbers were measured</span>
+<h2>Time-ordered replay, frozen design, each held-out period run once</h2>
+<p class="lede">Each issue is routed at the moment VS Code's bot first assigned it. The learner advances one day at a time, so the router only sees handoffs that had already happened.</p>
+<div class="lane"><div class="name">Summer 2026<small>11,734 issues</small></div>
+ <div class="seg"><div class="s learn" style="flex:35">Learn</div><div class="s tune" style="flex:14">Tune</div><div class="s dev" style="flex:36">Develop</div><div class="s hold" style="flex:22">Held out</div><div class="s uns" style="flex:30">Not scored</div></div>
+ <div class="dates"><span style="flex:35">Jun 1 to Jul 5</span><span style="flex:14">Jul 6-19</span><span style="flex:36">Jul 20 to Aug 24</span><span style="flex:22">Aug 25-Sep 15</span><span style="flex:30">owner not settled</span></div></div>
+<div class="lane"><div class="name">Spring 2026<small>22,281 issues, separate graph</small></div>
+ <div class="seg"><div class="s learn" style="flex:76">Learn</div><div class="s tune" style="flex:14">Tune</div><div class="s hold" style="flex:45">Held out</div></div>
+ <div class="dates"><span style="flex:76">Jan 1 to Mar 17</span><span style="flex:14">Mar 18-31</span><span style="flex:45">Apr 1 to May 15</span></div></div>
+<div class="rules">
+ <div><b>No peeking.</b> Every query filters edges on their timestamp, before the routing moment.</div>
+ <div><b>No label leakage.</b> Area labels count only if they existed when the issue was routed.</div>
+ <div><b>Pre-registered.</b> The win condition and commands were committed before each held-out run. The spring attempt to beat the bot failed, and is reported.</div>
+</div></div></body></html>

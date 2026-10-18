@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.frame{width:720px;padding:30px 32px;background:var(--paper)}
+h2{font-size:26px;margin:6px 0 18px}
+.label{font-size:12px;display:block;margin-bottom:6px}
+.box{border:1px solid var(--rule-2);border-radius:10px;background:#fff;padding:16px 18px}
+.box h3{font-size:18px;margin-bottom:4px}
+.box p{font-size:14.5px;color:var(--muted);line-height:1.45}
+.db{background:var(--graphite);border-color:var(--graphite-rule)}
+.db h3{color:var(--on-g)} .db p{color:var(--on-g-2)} .db .label{color:var(--signal)}
+.edge{font:500 13px/1.3 "JetBrains Mono";color:var(--signal);background:var(--graphite-2);border:1px solid var(--graphite-rule);border-radius:6px;padding:8px 10px;margin-top:10px}
+.down{height:26px;position:relative;margin:2px 0}
+.down::before{content:"";position:absolute;left:40px;top:2px;bottom:6px;width:2px;background:var(--accent)}
+.down::after{content:"";position:absolute;left:35px;bottom:0;border:6px solid transparent;border-top:8px solid var(--accent)}
+.down span{position:absolute;left:56px;top:4px;font:500 12px "JetBrains Mono";color:var(--muted)}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.o{border-radius:8px;padding:12px 14px;font-size:14px;border:1px solid var(--rule-2);background:#fff;color:var(--ink-2)}
+.o b{display:block;font:500 16px "Space Grotesk";color:var(--ink);margin-bottom:2px}
+.o.route{border-color:var(--accent);background:var(--accent-soft)}
+.o.ask{border-color:var(--ask)}
+.note{margin-top:16px;font-size:14px;color:var(--muted);line-height:1.5;border-top:1px solid var(--rule);padding-top:12px}
+.note b{color:var(--ink-2)}
+code{font:500 13px "JetBrains Mono";color:var(--ink)}
+</style></head><body><div class="frame">
+<span class="label">How Handoff Graph works</span>
+<h2>Two agents share one FalkorDB graph</h2>
+<div class="box"><span class="label">Learner agent</span><h3>Records every handoff</h3><p>Reads GitHub assign and unassign events. It is the only component that writes.</p></div>
+<div class="down"><span>writes edges</span></div>
+<div class="box db"><span class="label">FalkorDB, one graph per repo</span><h3>Handoff memory</h3><p>Issue, Person and Area nodes, with timestamped assignments and labels.</p><div class="edge">(:Person)-[:HANDED_OFF {issue, at, kind}]-&gt;(:Person)</div></div>
+<div class="down"><span>reads memory as of time t</span></div>
+<div class="box"><span class="label">Router agent, read-only</span><h3>Builds candidates, asks Jev, decides</h3><p>Every query filters <span class="mono">h.at &lt; $t</span>. The graph gives 5 candidates, a prior and a path for each. TypeSafe Jev answers one yes/no question per candidate. A fixed rule in code decides:</p></div>
+<div class="down"><span>one of three outcomes</span></div>
+<div class="out">
+ <div class="o route"><b>Route</b>to a learned alternative</div>
+ <div class="o ask"><b>Ask a human</b>when it's too close to call</div>
+ <div class="o"><b>Keep</b>the bot's pick</div>
+</div>
+<div class="note">Exposed as a live MCP server and a web page with <code>route_issue</code>, <code>handoff_history</code> and <code>record_handoff</code> (writes are off in public). The model never writes Cypher.</div>
+</div></body></html>

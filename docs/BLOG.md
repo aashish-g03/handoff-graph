@@ -6,7 +6,7 @@ tags: graphhacks, falkordb, wemakedevs, ai
 cover_image: https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/cover.png
 ---
 
-> **TL;DR:** Handoff Graph is an issue-routing agent that remembers **who hands which issues to whom** in a FalkorDB graph. I tested the same AI model and the same decision code with and without that memory, on two held-out periods of **real microsoft/vscode triage** (4,197 issues), each run once. Without memory it hands **66%** of issues to a human and picks the right owner first time **18%** of the time. With memory: **4%** and **74%**, within a few points of Microsoft's purpose-built triage classifier, with no training. It does **not** beat that classifier, and I show why.
+> **TL;DR:** Handoff Graph is an issue-routing agent that remembers **who hands which issues to whom** in a FalkorDB graph. I tested the same AI model and the same decision code with and without that memory, on two held-out periods of **real microsoft/vscode triage** (4,197 issues), each run once. In the summer period, without memory it hands **66%** of issues to a human and picks the right owner first time **18%** of the time. With memory: **4%** and **74%** (spring is similar: 64% to 7%, and 15% to 58%), within a few points of Microsoft's purpose-built triage classifier, with no training. It does **not** beat that classifier, and I show why.
 >
 > [Live demo](https://handoff-graph.up.railway.app) (no sign-up) | [Code](https://github.com/aashish-g03/handoff-graph) | [MCP server](https://handoff-graph.up.railway.app/mcp) | Built for Graph Hacks (WeMakeDevs x FalkorDB), Track 2: Agent Memory and Coordination
 
@@ -22,13 +22,13 @@ I used **microsoft/vscode** because it's very active and its triage is public. B
 
 Each of those handoffs carries knowledge: *this kind of issue, given to this person, ends up with that person.* Some engineers act as hubs. One engineer (call them A) received 405 issues from the bot between June and October, kept 238, handed 75 to one colleague and 64 to another. That pattern is invisible in any single issue, and obvious in a graph:
 
-![One engineer's handoff memory in FalkorDB: of 405 issues the bot gave them, they kept 238, handed 75 to B, 64 to C, and a few to others](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/memory.png)
+![One engineer's handoff memory in FalkorDB: of 405 issues the bot gave them, they kept 238, handed 75 to B, 64 to C, and a few to others](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/memory-v2.png)
 
 The hackathon's tagline is "agents are only as good as the context they work with." I wanted to measure that claim instead of asserting it. Routing is a good test, because an agent has to make the same decision thousands of times, and history says who was right.
 
 ## What I built
 
-![Architecture: a learner agent writes HANDED_OFF edges into FalkorDB; a read-only router agent reads memory as of time t, asks Jev one question per candidate, then routes, asks a human, or keeps the bot's pick](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/architecture.png)
+![Architecture: a learner agent writes HANDED_OFF edges into FalkorDB; a read-only router agent reads memory as of time t, asks Jev one question per candidate, then routes, asks a human, or keeps the bot's pick](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/architecture-v2.png)
 
 **Handoff Graph** has two agents that share one FalkorDB graph.
 
@@ -38,7 +38,7 @@ The hackathon's tagline is "agents are only as good as the context they work wit
 
 Every decision comes back with the graph path that justifies it. Here's the live page making a real call. The bot would give this WSL bug to one engineer; memory says that engineer has passed issues like it to a colleague, and the text agrees:
 
-![The live demo routing a real VS Code issue: the bot's pick handed 5 of 151 similar issues to another engineer, so the agent routes there, showing every candidate's probability and evidence issues](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/live-route.png)
+![The live demo routing a real VS Code issue: the bot's pick handed 5 of 151 similar issues to another engineer, so the agent routes there, showing every candidate's probability and evidence issues](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/live-route-v2.png)
 
 *(The live demo shows public GitHub handles because every path cites public issues. This post uses letters instead.)*
 
@@ -47,7 +47,8 @@ The model never writes Cypher. It gets a fixed set of tools over parameterised q
 ```cypher
 MATCH (a:Person {login: $first_pick})-[h:HANDED_OFF]->(b:Person)
 WHERE h.at < $t AND h.at >= $since AND h.kind IN ['forward', 'reassign']
-WITH b, count(h) AS times, max(h.at) AS last_at, collect(h.issue)[0..5] AS examples
+WITH b, count(h) AS times, max(h.at) AS last_at,
+     collect(h.issue)[0..5] AS examples
 RETURN b.login AS login, times, last_at, examples
 ORDER BY times DESC, last_at DESC
 ```
@@ -56,7 +57,7 @@ ORDER BY times DESC, last_at DESC
 
 Honestly, most of my time went here. It's easy to fool yourself on a task like this.
 
-![Evaluation timeline: summer data split into learn, tune, develop and a held-out period run once; spring data in its own graph with learn, tune and a held-out period run once](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/protocol.png)
+![Evaluation timeline: summer data split into learn, tune, develop and a held-out period run once; spring data in its own graph with learn, tune and a held-out period run once](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/protocol-v2.png)
 
 - **Time-ordered replay.** Each historical issue is routed at the exact moment VS Code's bot first assigned it. The learner advances day by day, and every router query filters `at < $t`, so a decision can never see a later handoff.
 - **No label leakage.** VS Code issues gain area labels over time, often from the same person who later reassigns them. Only about one handoff in five had an area label at the moment of routing. So the router only sees labels that existed at that moment, and otherwise relies on the issue text.
@@ -65,7 +66,7 @@ Honestly, most of my time went here. It's easy to fool yourself on a task like t
 
 ## The result
 
-![Results: without graph memory the agent asks a human 66% and 64% of the time; with memory 4% and 7%. Right owner first time rises from 18% and 15% to 74% and 58%, against VS Code's classifier at 77% and 62%](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/results.png)
+![Results: without graph memory the agent asks a human 66% and 64% of the time; with memory 4% and 7%. Right owner first time rises from 18% and 15% to 74% and 58%, against VS Code's classifier at 77% and 62%](https://raw.githubusercontent.com/aashish-g03/handoff-graph/main/docs/blog/results-v2.png)
 
 | Same model, same decision code | Has to ask a human | Right owner, first try |
 |---|---|---|
