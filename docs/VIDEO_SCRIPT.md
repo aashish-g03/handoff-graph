@@ -8,7 +8,7 @@
 - FalkorDB Browser: open `http://localhost:3001` (local) or use **Connect** in FalkorDB Cloud. Log in and open graph `hg:microsoft:vscode`.
 - In Claude Code, add the hosted MCP server once:
   ```bash
-  claude mcp add --transport http handoff-graph https://handoff-graph-mcp-production.up.railway.app/mcp
+  claude mcp add --transport http handoff-graph https://handoff-graph.up.railway.app/mcp
   ```
   Then run `/mcp` and check that `handoff-graph` shows 3 tools.
 - Do a warm-up call before recording (Shot 4's prompt), so the first live call isn't the cold one.
